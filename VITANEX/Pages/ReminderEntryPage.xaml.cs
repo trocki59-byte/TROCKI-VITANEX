@@ -12,7 +12,7 @@ public partial class ReminderEntryPage : ContentPage
     {
         InitializeComponent();
         _rem = rem ?? new Reminder { Time = DateTime.Now.AddHours(1).ToString("HH:00"), Icon = "⏰", Active = true };
-        Title = rem == null ? "Yeni Hatırlatıcı" : "Hatırlatıcıyı Düzenle";
+        Title = rem == null || rem.Id == 0 ? "Yeni Hatırlatıcı" : "Hatırlatıcıyı Düzenle";
 
         TitleField.Text = _rem.Title;
         TimeField.Time = TimeSpan.TryParse(_rem.Time, out var ts) ? ts : new TimeSpan(9, 0, 0);

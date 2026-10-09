@@ -82,11 +82,72 @@ public partial class HomePage : ContentPage
         ModulesGrid.ColumnDefinitions.Clear();
         ModulesGrid.RowDefinitions.Clear();
         for (int c = 0; c < cols; c++) ModulesGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
-        int rows = (Nav.Modules.Length + cols - 1) / cols;
-        for (int r = 0; r < rows; r++) ModulesGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+        // Normal modüller önce; geniş kutular (Yürüme Sayar, Şifalı Bitkiler) yarım satır kaplar
+        var normal = Nav.Modules.Where(m => !m.Wide).ToList();
+        var wide = Nav.Modules.Where(m => m.Wide).ToList();
+        int rows = (normal.Count + cols - 1) / cols;
+        int half = cols / 2;
+        int wideRows = (wide.Count + 1) / 2;
+        for (int r = 0; r < rows + wideRows; r++) ModulesGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
 
-        for (int i = 0; i < Nav.Modules.Length; i++)
-            ModulesGrid.Add(MakeTile(Nav.Modules[i]), i % cols, i / cols);
+        for (int i = 0; i < normal.Count; i++)
+            ModulesGrid.Add(MakeTile(normal[i]), i % cols, i / cols);
+
+        for (int i = 0; i < wide.Count; i++)
+        {
+            var t = MakeWideTile(wide[i]);
+            ModulesGrid.Add(t, (i % 2) * half, rows + i / 2);
+            Grid.SetColumnSpan(t, half);
+        }
+    }
+
+    Label _stepsSub;
+    string _stepsText = "Bugünkü adımlar";
+
+    View MakeWideTile(Nav.ModuleDef m)
+    {
+        bool steps = m.Key == "steps";
+        var sub = new Label
+        {
+            Text = steps ? _stepsText : $"{PlantData.All.Length} bitki rehberi",
+            FontSize = 12, TextColor = Colors.White, Opacity = 0.92
+        };
+        if (steps) _stepsSub = sub;
+
+        var tile = new Border
+        {
+            StrokeThickness = 0,
+            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 18 },
+            HeightRequest = 72,
+            Padding = new Thickness(14, 8),
+            Background = new LinearGradientBrush(new GradientStopCollection
+            {
+                new GradientStop(Color.FromArgb(steps ? "#0B4FD6" : "#1B7F4B"), 0f),
+                new GradientStop(Color.FromArgb(steps ? "#1E88FF" : "#22B573"), 1f)
+            }, new Point(0, 0), new Point(1, 1)),
+            Content = new HorizontalStackLayout
+            {
+                Spacing = 12,
+                VerticalOptions = LayoutOptions.Center,
+                Children =
+                {
+                    new Label { Text = m.Emoji, FontSize = 30, VerticalOptions = LayoutOptions.Center },
+                    new VerticalStackLayout
+                    {
+                        VerticalOptions = LayoutOptions.Center,
+                        Children =
+                        {
+                            new Label { Text = m.Title, FontSize = 15, FontAttributes = FontAttributes.Bold, TextColor = Colors.White },
+                            sub
+                        }
+                    }
+                }
+            }
+        };
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += async (s, e) => await Nav.Open(m.Key);
+        tile.GestureRecognizers.Add(tap);
+        return tile;
     }
 
     static View MakeTile(Nav.ModuleDef m)
@@ -164,6 +225,10 @@ public partial class HomePage : ContentPage
             TaskValue.Text = $"{done} / {tasks.Count}";
             TaskBar.Progress = tasks.Count == 0 ? 0 : (double)done / tasks.Count;
 
+            // Yürüme sayar
+            _stepsText = $"Bugün {(await StepCounter.Today()).ToString("N0", Fmt.TR)} adım";
+            if (_stepsSub != null) _stepsSub.Text = _stepsText;
+
             // Hatırlatıcılar
             var c = await Db.Get();
             _reminders = (await c.Table<Reminder>().ToListAsync())
@@ -239,10 +304,12 @@ public partial class HomePage : ContentPage
     async void OnMenuTapped(object sender, TappedEventArgs e)
     {
         var choice = await DisplayActionSheetAsync("TROÇKİ VİTANEX", "Kapat", null,
-            "Hatırlatıcılar", "Beslenme", "Eğitim", "Kişisel Gelişim", "Sosyal Yaşam", "İş / Kariyer",
+            "👣 Yürüme Sayar", "🌿 Şifalı Bitkiler", "Hatırlatıcılar", "Beslenme", "Eğitim", "Kişisel Gelişim", "Sosyal Yaşam", "İş / Kariyer",
             "Yedekleme", "Ayarlar", Theme.IsDark ? "☀️ Açık tema" : "🌙 Koyu tema", "Hakkında");
         switch (choice)
         {
+            case "👣 Yürüme Sayar": await Nav.Open("steps"); break;
+            case "🌿 Şifalı Bitkiler": await Nav.Open("plants"); break;
             case "Hatırlatıcılar": await Nav.Open("reminders"); break;
             case "Beslenme": await Nav.Open("nutrition"); break;
             case "Eğitim": await Nav.Open("education"); break;
@@ -274,7 +341,7 @@ public partial class HomePage : ContentPage
     async void OnFabClicked(object sender, EventArgs e)
     {
         var choice = await DisplayActionSheetAsync("Hızlı Ekle", "Vazgeç", null,
-            "❤️ Sağlık Kaydı", "💧 Su (+200 ml)", "💰 Gelir / Gider", "✅ Görev", "🍽️ Öğün", "⏰ Hatırlatıcı");
+            "❤️ Sağlık Kaydı", "💧 Su (+200 ml)", "💰 Gelir / Gider", "✅ Görev", "🍽️ Öğün", "👣 Yürüme Sayar", "⏰ Hatırlatıcı");
         switch (choice)
         {
             case "❤️ Sağlık Kaydı": await Nav.Push(new HealthEntryPage()); break;
@@ -285,6 +352,7 @@ public partial class HomePage : ContentPage
             case "💰 Gelir / Gider": await Nav.Push(new FinanceEntryPage()); break;
             case "✅ Görev": await Nav.Push(new TaskEntryPage()); break;
             case "🍽️ Öğün": await Nav.Push(new MealEntryPage()); break;
+            case "👣 Yürüme Sayar": await Nav.Open("steps"); break;
             case "⏰ Hatırlatıcı": await Nav.Push(new ReminderEntryPage()); break;
         }
     }

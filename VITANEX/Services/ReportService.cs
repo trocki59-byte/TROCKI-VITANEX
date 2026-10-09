@@ -99,6 +99,13 @@ public static class ReportService
         s.Add("Toplam egzersiz", $"{recs.Sum(r => r.ExerciseMin ?? 0)} dk");
         s.Add("Toplam su", $"{water.Sum(x => x.Ml) / 1000.0:0.0} litre");
         s.Add("Ortalama sağlık skoru", "%" + Stats.PeriodHealthScore(recs, water, start, end).ToString("0"));
+
+        var steps = (await Db.Between<StepDay>(start, end)).Where(x => x.Steps > 0).ToList();
+        int total = steps.Sum(x => x.Steps);
+        s.Add("Toplam adım", total.ToString("N0", Fmt.TR));
+        s.Add("Günlük ortalama adım", steps.Count > 0 ? (total / steps.Count).ToString("N0", Fmt.TR) : "—");
+        s.Add("Yürünen mesafe", StepCounter.Km(total).ToString("0.0", Fmt.TR) + " km");
+        s.Add("Adım hedefine ulaşılan gün", steps.Count(x => x.Steps >= AppSettings.StepGoal).ToString());
         return s;
     }
 

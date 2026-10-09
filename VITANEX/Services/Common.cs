@@ -59,6 +59,19 @@ public static class AppSettings
         get => Preferences.Default.Get("goal_calorie", 2000);
         set => Preferences.Default.Set("goal_calorie", value);
     }
+
+    public static int StepGoal
+    {
+        get => Preferences.Default.Get("goal_steps", 8000);
+        set => Preferences.Default.Set("goal_steps", value);
+    }
+
+    /// <summary>Adım uzunluğu (cm).</summary>
+    public static int StrideCm
+    {
+        get => Preferences.Default.Get("stride_cm", 72);
+        set => Preferences.Default.Set("stride_cm", value);
+    }
 }
 
 /// <summary>Biçimlendirme ve sayı okuma yardımcıları.</summary>

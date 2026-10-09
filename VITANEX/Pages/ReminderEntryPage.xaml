@@ -15,7 +15,7 @@
                     <TimePicker x:Name="TimeField" />
 
                     <Label Text="Simge" Style="{StaticResource FieldLabel}" />
-                    <Grid x:Name="IconPanel" ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="6" RowSpacing="6" />
+                    <Grid x:Name="IconPanel" ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="6" RowSpacing="6" />
 
                     <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
                         <Label Text="Aktif" Style="{StaticResource FieldLabel}" VerticalOptions="Center" Margin="0" />

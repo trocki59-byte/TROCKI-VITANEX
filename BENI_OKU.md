@@ -31,6 +31,8 @@ dotnet publish -f net10.0-android -c Release
 
 APK: `VITANEX\bin\Release\net10.0-android\publish\com.trocki.vitanex-Signed.apk`
 
+> **Sürüm 1.1:** Yürüme Sayar ve Şifalı Bitkiler eklendi. Yürüme sayar Android 10+ cihazlarda "Fiziksel etkinlik" izni ister.
+
 ## 3. Ekranlar ve özellikler
 
 | Bölüm | Neler var |
@@ -44,6 +46,8 @@ APK: `VITANEX\bin\Release\net10.0-android\publish\com.trocki.vitanex-Signed.apk`
 | 📊 **İstatistikler** | Günlük / Haftalık / Aylık / Yıllık · Sağlık-Finans-Görev halka göstergeleri · gelir-gider, sağlık skoru, kilo, görev, su grafikleri |
 | 📄 **Raporlar** | Genel / Sağlık / Finans / Görev / Beslenme raporu · tarih aralığı · önizleme · **PDF kaydet, paylaş, yazdır** |
 | ☁️ **Yedekleme** | Tek tuşla yedek · paylaş (Drive, e-posta) · dosyadan geri yükleme (önce otomatik güvenlik yedeği alır) |
+| 👣 **Yürüme Sayar** | Telefonun adım sensörüyle otomatik sayım (uygulama kapalıyken de sayar, açılınca eklenir) · günlük hedef, adım uzunluğu · mesafe ve kalori · son 7 gün grafiği, hedef serisi, en iyi gün · elle adım girme |
+| 🌿 **Şifalı Bitkiler** | 60 bitki · gerçek fotoğraflar (Wikimedia Commons, bir kez indirilir sonra çevrimdışı) · günün bitkisi · arama ve 10 kategori · kullanılan kısım, geleneksel kullanım, hazırlanışı, ⚠️ dikkat · favoriler · çay hatırlatıcısı |
 | ⚙️ **Ayarlar** | Tema (Cihaza göre / Açık / Koyu), kullanıcı adı, para birimi, günlük hedefler (su, uyku, egzersiz, kalori), hatırlatıcı yönetimi, tüm verileri silme |
 
 **Koyu tema:** Ayarlar → Tema'dan ya da ana sayfadaki ☰ menüsünden 🌙 Koyu tema ile açılır. "Cihaz ayarına göre" seçilirse telefonun/tabletin temasını izler.

@@ -5,7 +5,7 @@ namespace VITANEX.Services;
 /// <summary>Modüller arası gezinme.</summary>
 public static class Nav
 {
-    public record ModuleDef(string Key, string Emoji, string Title);
+    public record ModuleDef(string Key, string Emoji, string Title, bool Wide = false);
 
     public static readonly ModuleDef[] Modules =
     {
@@ -21,6 +21,8 @@ public static class Nav
         new("reports", "📄", "Raporlar"),
         new("backup", "☁️", "Yedekleme"),
         new("settings", "⚙️", "Ayarlar"),
+        new("steps", "👣", "Yürüme Sayar", true),
+        new("plants", "🌿", "Şifalı Bitkiler", true),
     };
 
     static bool _busy;
@@ -50,6 +52,8 @@ public static class Nav
             case "backup": await Push(new BackupPage()); break;
             case "settings": await Push(new SettingsPage()); break;
             case "reminders": await Push(new RemindersPage()); break;
+            case "steps": await Push(new StepsPage()); break;
+            case "plants": await Push(new PlantsPage()); break;
         }
     }
 }

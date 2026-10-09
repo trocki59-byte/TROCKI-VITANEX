@@ -180,8 +180,16 @@ public class Reminder : IEntity
     public bool Active { get; set; } = true;
     public DateTime? LastDone { get; set; }
 
-    public static readonly string[] Icons = { "💧", "🚶", "🍽️", "💊", "📖", "📅", "🏃", "😴", "🧘", "📞", "🛒", "⏰" };
+    public static readonly string[] Icons = { "💧", "🚶", "🍽️", "💊", "📖", "📅", "🏃", "😴", "🧘", "📞", "🛒", "🍵", "🌿", "👣", "⏰" };
 
     [Ignore] public bool DoneToday => LastDone.HasValue && LastDone.Value.Date == DateTime.Today;
     [Ignore] public string StateText => Active ? "Açık" : "Kapalı";
+}
+
+// ───────────── YÜRÜME SAYAR ─────────────
+public class StepDay : IEntity
+{
+    [PrimaryKey, AutoIncrement] public int Id { get; set; }
+    [Indexed] public DateTime Date { get; set; }   // günün başlangıcı (00:00)
+    public int Steps { get; set; }
 }
