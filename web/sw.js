@@ -1,5 +1,5 @@
 // TROÇKİ VİTANEX — çevrimdışı çalışma için önbellek
-const CACHE = 'trocki-vitanex-v1';
+const CACHE = 'trocki-vitanex-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

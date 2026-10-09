@@ -91,6 +91,8 @@ input,textarea,select{-webkit-user-select:text;user-select:text;font-size:16px!i
 .tablet .mods{grid-template-columns:repeat(6,1fr)}
 .mod{background:var(--card);border-radius:16px;box-shadow:0 3px 10px #0b4fd61a;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:12px;text-align:center;padding:4px;color:var(--tx)}
 .mod .e{font-size:26px}
+.mod.wide{grid-column:1/-1;height:64px;flex-direction:row;gap:14px;font-size:14px;text-align:left;background:linear-gradient(135deg,#1B7F4B,#22B573);color:#fff}
+.mod.wide small{font-size:11.5px;opacity:.9}
 .home-grid{display:block}
 .tablet .home-grid{display:grid;grid-template-columns:3fr 2fr;gap:16px;align-items:start}
 .rem{display:grid;grid-template-columns:28px 46px 26px 1fr;align-items:center;gap:6px;padding:6px 0;font-size:14px}
@@ -164,7 +166,7 @@ let uid=1;
 let S;
 function seed(){
   const T=today(),rnd=(a,b)=>a+Math.random()*(b-a);
-  S={user:'Troçki',goals:{water:2000,sleep:8,ex:30,cal:2000},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[]};
+  S={user:'Troçki',goals:{water:2000,sleep:8,ex:30,cal:2000},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[],fav:[]};
   for(let i=45;i>=1;i--){const d=addD(T,-i);
     S.health.push({id:uid++,date:new Date(d.getTime()+8*36e5),w:+(76.4+i*0.05+rnd(-.3,.3)).toFixed(1),sys:Math.round(rnd(118,134)),dia:Math.round(rnd(74,86)),pulse:Math.round(rnd(64,80)),spo2:Math.round(rnd(96,99)),sleep:+rnd(6,8.5).toFixed(1),ex:Math.round(rnd(10,50)),note:''});
     S.water.push({date:new Date(d.getTime()+12*36e5),ml:Math.round(rnd(1200,2300)/100)*100});}
@@ -249,7 +251,7 @@ const ICON={
  stats:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>',
  tasks:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
  reports:'<svg viewBox="0 0 24 24"><path d="M6 2h8l5 5v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="currentColor"/><path d="M8 11h8M8 14.5h8M8 18h5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>'};
-const MODULES=[['health','❤️','Sağlık'],['nutrition','🍽️','Beslenme'],['finance','💰','Finans'],['tasks','✅','Görevler'],['education','📘','Eğitim'],['stats','📊','İstatistikler'],['social','👥','Sosyal Yaşam'],['development','🌱','Kişisel Gelişim'],['career','💼','İş / Kariyer'],['reports','📄','Raporlar'],['backup','☁️','Yedekleme'],['settings','⚙️','Ayarlar']];
+const MODULES=[['health','❤️','Sağlık'],['nutrition','🍽️','Beslenme'],['finance','💰','Finans'],['tasks','✅','Görevler'],['education','📘','Eğitim'],['stats','📊','İstatistikler'],['social','👥','Sosyal Yaşam'],['development','🌱','Kişisel Gelişim'],['career','💼','İş / Kariyer'],['reports','📄','Raporlar'],['backup','☁️','Yedekleme'],['settings','⚙️','Ayarlar'],['plants','🌿','Şifalı Bitkiler']];
 const MODINFO={education:['Eğitim','📘','Kitaplar, kurslar, araştırmalar ve öğrenme hedefleri.',['Kitap','Kurs','Araştırma','Çalışma Konusu','Öğrenme Hedefi']],
  development:['Kişisel Gelişim','🌱','Alışkanlıklar, günlük hedefler, motivasyon notları ve kişisel projeler.',['Alışkanlık','Günlük Hedef','Motivasyon Notu','Kişisel Proje']],
  social:['Sosyal Yaşam','👥','Görüşmeler, etkinlikler, seyahatler ve sosyal planlar.',['Görüşme','Etkinlik','Seyahat','Sosyal Plan']],
@@ -258,9 +260,75 @@ const EXP=['Market','Faturalar','Kira','Ulaşım','Sağlık','Eğitim','Giyim','
 const STN=['Bekliyor','Devam Ediyor','Tamamlandı'],STC=['var(--o)','var(--a)','var(--g)'],PRN=['Düşük','Orta','Yüksek'],PRC=['#8A97B2','var(--o)','var(--r)'];
 const MEALS=['Kahvaltı','Öğle Yemeği','Akşam Yemeği','Ara Öğün'],MICON={'Kahvaltı':'🍳','Öğle Yemeği':'🥗','Akşam Yemeği':'🍲','Ara Öğün':'🍎'};
 
+// ───────── ŞİFALI BİTKİLER (60) ─────────
+// [ad, latince, simge, kategoriler, kullanılan kısım, geleneksel kullanım, nasıl kullanılır, dikkat]
+const PCAT={S:['🫄','Sindirim'],R:['🫁','Solunum'],U:['😴','Uyku & Stres'],B:['🛡️','Bağışıklık'],C:['🩹','Cilt & Yara'],K:['❤️','Kalp & Dolaşım'],I:['💧','Böbrek & İdrar'],A:['🦴','Ağrı & Eklem'],M:['⚖️','Metabolizma'],Z:['🌸','Kadın Sağlığı']};
+const PLANTS=[
+['Adaçayı','Salvia officinalis','🌿','SRZ','Yaprak','Boğaz ve ağız iltihaplarında gargara, hazımsızlık ve gaz, aşırı terlemenin azaltılması, sıcak basmalarında destek.','1 tatlı kaşığı kuru yaprak 1 su bardağı kaynar suda 5–10 dk demlenir; günde 1–2 bardak. Gargara için daha koyu demlenir.','Uzun süreli ve yüksek dozda kullanılmamalı (tujon içerir). Gebelik, emzirme ve epilepside kaçınılmalı.'],
+['Ihlamur','Tilia platyphyllos','🍃','RUB','Çiçek ve bürgü','Soğuk algınlığı ve gripte terletici ve yatıştırıcı, öksürük, hafif huzursuzluk ve uykusuzluk.','1 tatlı kaşığı çiçek 1 bardak kaynar suda 10 dk demlenir; günde 2–3 bardak, sıcak içilir.','Genelde güvenlidir. Kalp hastalarında çok sık ve aşırı tüketimden kaçınılmalı.'],
+['Papatya','Matricaria chamomilla','🌼','SUC','Çiçek','Mide krampları, gaz ve hazımsızlık; rahatlatıcı, uykuya yardımcı; ciltte tahriş ve ağız içi iltihaplarında haricen.','1–2 tatlı kaşığı çiçek 1 bardak kaynar suda kapağı kapalı 5–10 dk demlenir; günde 2–3 bardak.','Papatyagiller (Asteraceae) alerjisi olanlar kaçınmalı. Kan sulandırıcı ilaç kullananlar doktora danışmalı.'],
+['Nane','Mentha × piperita','🌱','SRA','Yaprak','Gaz, şişkinlik, bulantı ve hazımsızlık; huzursuz bağırsakta yağı (kapsül) kullanılır; burun tıkanıklığında buharı; başağrısında yağı şakaklara.','1 tatlı kaşığı kuru yaprak 1 bardak kaynar suda 5–10 dk demlenir; yemeklerden sonra içilir.','Reflü ve mide yanmasını artırabilir. Nane yağı bebek ve küçük çocukların yüzüne sürülmemeli.'],
+['Kekik','Origanum onites','🌿','SRB','Yaprak ve çiçekli dal','Öksürük ve bronşit, boğaz enfeksiyonları, gaz ve hazımsızlık; antiseptik etkili; kekik yağı (karvakrol) antimikrobiyaldir.','1 tatlı kaşığı 1 bardak kaynar suda 5–10 dk demlenir; günde 1–2 bardak. Gargara olarak da kullanılır.','Gebelikte yüksek doz ve kekik yağının içilmesi önerilmez. Saf yağ cilde seyreltilmeden sürülmemeli.'],
+['Melisa (Oğulotu)','Melissa officinalis','🍋','USZ','Yaprak','Sinirsel gerginlik, kaygı ve uyku güçlüğü; sinirsel kökenli mide-bağırsak şikâyetleri; uçukta haricen krem.','1–2 tatlı kaşığı yaprak 1 bardak kaynar suda 10 dk demlenir; akşam 1–2 bardak.','Tiroid hormonu ilacı kullananlar ve hipotiroidi hastaları doktora danışmalı. Uyku ilaçlarının etkisini artırabilir.'],
+['Rezene','Foeniculum vulgare','🌾','SRZ','Tohum (meyve)','Gaz, şişkinlik ve sindirim krampları; öksürükte balgam söktürücü; emziren annelerde süt artırıcı olarak geleneksel kullanım.','1 tatlı kaşığı tohum hafifçe ezilir, 1 bardak kaynar suda 10 dk demlenir; günde 2–3 bardak.','Östrojene duyarlı hastalıklarda dikkat. Bebeklerde ve gebelikte uzun süreli kullanımdan kaçınılmalı.'],
+['Anason','Pimpinella anisum','⭐','SR','Tohum (meyve)','Gaz ve şişkinlik, hazımsızlık; öksürük ve bronşitte balgam söktürücü.','1 tatlı kaşığı tohum ezilerek 1 bardak kaynar suda 10 dk demlenir; günde 2–3 bardak.','Anason ve kereviz alerjisi olanlar kaçınmalı. Gebelikte yüksek dozdan kaçınılmalı.'],
+['Zencefil','Zingiber officinale','🫚','SARB','Kök (rizom)','Bulantı, yol tutması ve hazımsızlık; soğuk algınlığında ısıtıcı; eklem ağrılarında iltihap giderici destek.','Taze kökten birkaç ince dilim 1 bardak suda 10 dk kaynatılır; bal ve limonla içilir. Yemeklerde baharat olarak.','Kan sulandırıcı kullananlar ve safra taşı olanlar doktora danışmalı. Yüksek doz mide yakabilir.'],
+['Zerdeçal','Curcuma longa','🟡','ASM','Kök (rizom)','Eklem ağrıları ve iltihap; sindirim ve safra akışı; antioksidan.','Yemeklere ½–1 çay kaşığı; emilimi artırmak için karabiber ve yağ ile birlikte. Zerdeçallı süt yapılabilir.','Safra yolu tıkanıklığı ve safra taşında kullanılmamalı. Kan sulandırıcılarla etkileşebilir; yüksek dozlu takviyeler karaciğeri zorlayabilir.'],
+['Ekinezya','Echinacea purpurea','🌺','BR','Çiçekli toprak üstü kısım, kök','Soğuk algınlığı ve üst solunum yolu enfeksiyonlarının başlangıcında bağışıklık desteği.','Hazır preparat veya çay olarak; ilk belirtilerde başlanır, en fazla 10 gün kullanılır.','Otoimmün hastalıklarda, bağışıklığı baskılayan ilaç kullananlarda ve papatyagiller alerjisinde kullanılmamalı.'],
+['Kuşburnu','Rosa canina','🍒','BAI','Meyve','C vitamini kaynağı; soğuk algınlığında bağışıklık desteği; eklem ağrısında (toz) destek; hafif idrar söktürücü.','1 yemek kaşığı kırılmış meyve 1 bardak suda 10–15 dk kaynatılır, süzülür. Marmelat ve pekmez olarak da tüketilir.','Böbrek taşı eğilimi olanlarda aşırı tüketilmemeli. İçindeki tüyler mutlaka süzülmeli.'],
+['Biberiye','Rosmarinus officinalis','🌲','SKA','Yaprak','Hazımsızlık ve gaz; dolaşımı uyarıcı; hafızayı destekleyici olarak geleneksel kullanım; kas ve eklem ağrısında haricen yağı.','1 çay kaşığı yaprak 1 bardak kaynar suda 10 dk demlenir; günde 1–2 bardak.','Gebelikte yüksek dozdan, epilepside kullanımdan kaçınılmalı. Yağı içilmez.'],
+['Lavanta','Lavandula angustifolia','💜','UCA','Çiçek','Kaygı, huzursuzluk ve uykusuzluk; baş ağrısı; böcek ısırıkları ve küçük yanıklarda haricen yağı.','1 tatlı kaşığı çiçek 1 bardak kaynar suda 10 dk demlenir. Yastığa birkaç damla yağ veya buhur olarak.','Yağı seyreltilmeden geniş alana sürülmemeli, içilmemeli. Uyku ilaçlarının etkisini artırabilir.'],
+['Sarı Kantaron','Hypericum perforatum','🌕','UC','Çiçekli dal','Hafif-orta depresif ruh hâli; kantaron yağı yara, yanık ve kesiklerde haricen.','Çay: 1 tatlı kaşığı 1 bardak kaynar suda 10 dk. Kantaron yağı: çiçekler zeytinyağında güneşte 4–6 hafta bekletilir.','ÇOK SAYIDA İLAÇLA ETKİLEŞİR: doğum kontrol hapı, antidepresan, kan sulandırıcı, kalp ve HIV ilaçları. Güneşe duyarlılık yapar. Doktora danışmadan içilmemeli.'],
+['Isırgan Otu','Urtica dioica','🌿','IAMC','Yaprak, kök','İdrar söktürücü; eklem ağrılarında destek; demir ve mineral kaynağı; kökü iyi huylu prostat büyümesinde kullanılır.','1–2 tatlı kaşığı kuru yaprak 1 bardak kaynar suda 10 dk demlenir. Taze yaprakları haşlanarak yemeklerde.','Kalp veya böbrek yetmezliğine bağlı ödemde kullanılmamalı. Tansiyon ve şeker ilaçlarıyla etkileşebilir.'],
+['Karahindiba','Taraxacum officinale','🌼','SIM','Yaprak, kök','İdrar söktürücü; iştah açıcı ve safra akışını artırıcı; hazımsızlık.','Kök: 1 tatlı kaşığı 1 bardak suda 5–10 dk kaynatılır. Taze yapraklar salatada.','Safra yolu tıkanıklığı ve safra kesesi iltihabında kullanılmamalı. Papatyagiller alerjisinde dikkat.'],
+['Aloe Vera','Aloe barbadensis','🪴','CS','Yaprak içi jel','Güneş yanığı, hafif yanık, kuru ve tahrişli ciltte haricen yatıştırıcı.','Yaprak kesilir, içteki şeffaf jel doğrudan cilde sürülür.','Yaprağın kabuk altındaki sarı özsuyu (lateks) güçlü müshildir; içilmemeli. Gebelikte ağızdan kullanılmamalı.'],
+['Sarımsak','Allium sativum','🧄','KBM','Soğan (diş)','Kolesterol ve tansiyonu hafif düşürmeye destek; damar sağlığı; antimikrobiyal ve bağışıklık destekleyici.','Günde 1–2 diş çiğ olarak; ezildikten sonra 10 dk bekletilip tüketilirse etkili bileşen (allisin) artar.','Kan sulandırıcı kullananlar ve ameliyat öncesi dönemde dikkat. Mide hassasiyeti yapabilir.'],
+['Çörek Otu','Nigella sativa','⚫','BMRC','Tohum','Bağışıklık desteği; kan şekeri ve kolesterolün dengelenmesine yardımcı; astım ve alerjide destek; ciltte yağı.','Günde 1 çay kaşığı tohum (bal veya yoğurtla) ya da 1 tatlı kaşığı yağ.','Şeker ve tansiyon ilaçlarının etkisini artırabilir. Gebelikte yüksek doz önerilmez.'],
+['Ginkgo','Ginkgo biloba','🍂','K','Yaprak (standart ekstre)','Beyin ve el-ayak dolaşımının desteklenmesi; hafıza ve odaklanma; kulak çınlamasında destek.','Yalnızca standardize hazır ekstre kullanılır; ev çayı önerilmez.','Kan sulandırıcı, aspirin ve ağrı kesicilerle kanama riskini artırır. Ameliyattan 2 hafta önce bırakılmalı. Epilepside dikkat.'],
+['Ginseng','Panax ginseng','🌱','UM','Kök','Yorgunluk ve halsizlikte dayanıklılık artırıcı; zihinsel performans; kan şekerine yardımcı.','Standart ekstre veya kök dilimleri çay olarak; 2–3 ay kullanılıp ara verilir.','Uykusuzluk ve çarpıntı yapabilir. Yüksek tansiyon, kan sulandırıcı ve şeker ilacı kullananlar doktora danışmalı.'],
+['Kediotu','Valeriana officinalis','🐈','U','Kök','Uykuya dalma güçlüğü, huzursuzluk ve sinirsel gerginlik.','1 çay kaşığı kök 1 bardak kaynar suda 10–15 dk demlenir; yatmadan 30–60 dk önce içilir.','Uyku ilaçları, alkol ve sakinleştiricilerle birlikte kullanılmamalı. Araç kullanmadan önce dikkat.'],
+['Çarkıfelek','Passiflora incarnata','🌀','U','Toprak üstü kısım','Kaygı, sinirsel huzursuzluk ve uykusuzluk.','1 çay kaşığı 1 bardak kaynar suda 10 dk demlenir; akşam içilir.','Sakinleştirici ve uyku ilaçlarının etkisini artırır. Gebelikte kullanılmamalı.'],
+['Mürver','Sambucus nigra','🫐','BR','Çiçek, olgun meyve','Soğuk algınlığı ve gripte terletici; meyve şurubu bağışıklık desteği.','Çiçek: 1 tatlı kaşığı 1 bardak kaynar suda 10 dk. Meyve: pişirilerek şurup veya reçel.','Ham meyve, yaprak, kabuk ve tohumlar zehirlidir; meyve mutlaka pişirilmeli.'],
+['Meyan Kökü','Glycyrrhiza glabra','🪵','SR','Kök','Öksürük ve boğaz ağrısı; mide yanması ve gastrit.','1 çay kaşığı kök 1 bardak suda 5 dk kaynatılır; günde 1 bardak, en fazla 4–6 hafta.','Uzun süreli kullanım tansiyonu yükseltir, potasyumu düşürür, ödem yapar. Tansiyon, kalp, böbrek hastaları ve gebeler kullanmamalı.'],
+['Hayıt','Vitex agnus-castus','🌸','Z','Meyve','Adet öncesi gerginlik (PMS), memede hassasiyet ve adet düzensizliğinde destek.','Standart hazır ekstre olarak; etkisi 2–3 ayda görülür.','Gebelik, emzirme, doğum kontrol hapı ve hormon tedavisinde kullanılmamalı.'],
+['Alıç','Crataegus monogyna','🍎','K','Yaprak, çiçek, meyve','Kalp kasını güçlendirmeye ve dolaşıma destek; hafif tansiyon yüksekliği; çarpıntıda geleneksel kullanım.','1 tatlı kaşığı çiçekli yaprak 1 bardak kaynar suda 10 dk demlenir; günde 2 bardak.','Kalp ilacı (özellikle digoksin) ve tansiyon ilacı kullananlar mutlaka doktora danışmalı.'],
+['Meryem Ana Dikeni','Silybum marianum','🌵','SM','Tohum','Karaciğeri koruyucu (silimarin); hazımsızlık ve şişkinlik.','Standart hazır ekstre olarak; tohum çayı az etkilidir.','Papatyagiller alerjisinde dikkat. Bazı ilaçların karaciğerde yıkımını etkileyebilir.'],
+['Enginar','Cynara scolymus','🥬','SM','Yaprak','Safra akışını artırıcı, hazımsızlık ve şişkinlik; kolesterolü düşürmeye destek.','Yaprak ekstresi ya da yaprak haşlama suyu; enginar yemek olarak tüketilir.','Safra yolu tıkanıklığı ve safra taşında kullanılmamalı.'],
+['Tarçın','Cinnamomum verum','🟤','MS','Kabuk','Kan şekerinin dengelenmesine yardımcı; gaz ve hazımsızlık; ısıtıcı.','1 çubuk 1 bardak suda 10 dk kaynatılır ya da yemeklere ½ çay kaşığı.','Çin (Cassia) tarçını yüksek kumarin içerir; fazlası karaciğere zararlıdır. Seylan tarçını tercih edilmeli. Şeker ilacıyla dikkat.'],
+['Karanfil','Syzygium aromaticum','🔩','ASB','Çiçek tomurcuğu','Diş ağrısında uyuşturucu ve antiseptik; gaz ve hazımsızlık.','Diş ağrısında 1 tane ağrıyan dişin yanına konur. Çaylara 2–3 tane eklenir.','Saf karanfil yağı diş etini tahriş eder, seyreltilmeli. Çocuklarda yağı ağızdan verilmemeli.'],
+['Mısır Püskülü','Zea mays (stigma)','🌽','I','Püskül','İdrar söktürücü; idrar yolu tahrişi ve böbrek kumunda destek.','1 yemek kaşığı püskül 1 bardak suda 5–10 dk kaynatılır; günde 2–3 bardak.','Diüretik ve tansiyon ilaçlarıyla etkisi artar. Kalp-böbrek yetmezliğine bağlı ödemde kullanılmamalı.'],
+['Turna Yemişi','Vaccinium macrocarpon','🔴','IB','Meyve','İdrar yolu enfeksiyonlarının tekrarlamasını önlemeye destek.','Şekersiz meyve suyu veya standart kapsül olarak düzenli kullanılır.','Mevcut enfeksiyonun tedavisi değildir. Varfarin ile etkileşebilir. Böbrek taşı (oksalat) eğiliminde dikkat.'],
+['Ebegümeci','Malva sylvestris','🌺','RSC','Yaprak, çiçek','Kuru öksürük ve boğaz tahrişinde yumuşatıcı; mide-bağırsak tahrişi; ciltte yara ve tahrişte lapa.','1 tatlı kaşığı 1 bardak kaynar suda 10 dk demlenir. Yaprakları yemeği yapılır.','Genelde güvenlidir. İlaçlarla aynı anda alınırsa emilimi azaltabilir; 1 saat ara verilmeli.'],
+['Hatmi','Althaea officinalis','🌸','RSC','Kök, çiçek, yaprak','Kuru öksürük, boğaz ve ağız tahrişi; mide tahrişinde koruyucu.','Kök: 1 tatlı kaşığı soğuk suda 1–2 saat bekletilir (soğuk demleme), süzülür.','İlaçlarla aynı anda alınırsa emilimi azaltabilir. Kan şekerini düşürebilir.'],
+['Keten Tohumu','Linum usitatissimum','🟫','SMK','Tohum','Kabızlık (lif); kolesterolün düşürülmesine destek; omega-3 kaynağı.','Günde 1–2 yemek kaşığı öğütülmüş tohum, bol su ile; yoğurt veya salataya eklenir.','Mutlaka bol su ile alınmalı; bağırsak tıkanıklığında kullanılmamalı. İlaçlarla arasında 1 saat bırakılmalı.'],
+['Pelin Otu','Artemisia absinthium','🌿','S','Toprak üstü kısım','İştahsızlık, hazımsızlık ve safra yetersizliği (acı tonik).','Çok az miktar: ½ çay kaşığı 1 bardak kaynar suda 5 dk; yemekten önce, kısa süreli.','Tujon içerir; uzun süre ve yüksek dozda zehirlidir. Gebelik, emzirme, epilepsi ve çocuklarda kullanılmamalı.'],
+['Civanperçemi','Achillea millefolium','🤍','SZCK','Çiçekli toprak üstü kısım','Hazımsızlık ve gaz; adet sancısı; küçük yaralarda kanama durdurucu ve iyileştirici (haricen).','1 tatlı kaşığı 1 bardak kaynar suda 10 dk demlenir; günde 2 bardak.','Papatyagiller alerjisinde ve gebelikte kullanılmamalı. Güneşe duyarlılık yapabilir.'],
+['Ardıç','Juniperus communis','🫐','IS','Meyve (kozalak)','İdrar söktürücü; gaz ve hazımsızlık.','1 çay kaşığı meyve ezilir, 1 bardak kaynar suda 10 dk demlenir; en fazla 4–6 hafta.','Böbrek hastalığı ve gebelikte kullanılmamalı. Uzun süreli kullanım böbreği tahriş eder.'],
+['Okaliptüs','Eucalyptus globulus','🌳','R','Yaprak, yağ','Nezle, sinüzit ve bronşitte burun ve göğüs açıcı (buhar ve göğüs merhemi).','Bir kâse sıcak suya birkaç yaprak veya 2–3 damla yağ eklenip buharı solunur.','Yağı içilmez; zehirlidir. Küçük çocukların yüzüne sürülmemeli ve buharı verilmemeli. Astımda dikkat.'],
+['Sinameki','Senna alexandrina','🍂','S','Yaprak, meyve','Kısa süreli kabızlıkta güçlü müshil.','½–1 çay kaşığı yaprak 1 bardak sıcak suda 10 dk demlenir; akşam içilir, en fazla 1 hafta.','Uzun süreli kullanım bağırsak tembelliği ve potasyum kaybı yapar. Gebelik, çocuklar, bağırsak tıkanıklığı ve iltihabında kullanılmamalı.'],
+['Söğüt Kabuğu','Salix alba','🌳','A','Kabuk','Baş, sırt ve eklem ağrılarında ağrı kesici (doğal salisilat).','1 çay kaşığı kabuk 1 bardak suda 5–10 dk kaynatılır; günde 2–3 bardak.','Aspirin alerjisi, mide ülseri, kan sulandırıcı kullanımı, gebelik ve çocuklarda (Reye sendromu riski) kullanılmamalı.'],
+['Atkuyruğu','Equisetum arvense','🎋','ICA','Toprak üstü kısım','İdrar söktürücü; böbrek kumunda destek; silisyum kaynağı (tırnak, saç, kemik).','1 tatlı kaşığı 1 bardak suda 5 dk kaynatılır; en fazla 4–6 hafta.','B1 vitamini eksikliği yapabilir; uzun süre kullanılmamalı. Kalp-böbrek yetmezliği ödeminde kullanılmamalı.'],
+['Defne','Laurus nobilis','🍃','SAR','Yaprak, yağ','Gaz ve hazımsızlık; defne yağı kas ve eklem ağrılarında ovma; saç ve cilt bakımında sabunu.','1–2 yaprak 1 bardak kaynar suda 10 dk demlenir. Yemeklere aroma olarak.','Yaprak bütün olarak yutulmamalı. Yağı alerjik cilt reaksiyonu yapabilir.'],
+['Mercanköşk','Origanum majorana','🌿','SUR','Yaprak','Hazımsızlık, gaz ve krampları; sinir yatıştırıcı; öksürük.','1 tatlı kaşığı 1 bardak kaynar suda 10 dk demlenir; günde 1–2 bardak.','Gebelikte yüksek dozdan kaçınılmalı.'],
+['Kimyon','Cuminum cyminum','🟤','SM','Tohum','Gaz, şişkinlik ve hazımsızlık; iştah açıcı.','½ çay kaşığı tohum 1 bardak kaynar suda 10 dk demlenir veya yemeklerde baharat.','Şeker ilacı kullananlarda kan şekerini düşürebilir.'],
+['Aynısefa','Calendula officinalis','🧡','CS','Çiçek','Yara, yanık, çatlak ve pişiklerde iyileştirici (merhem, yağ); ağız içi iltihabında gargara.','Çiçekler zeytinyağında 4 hafta bekletilerek yağ yapılır. Çay: 1 tatlı kaşığı 1 bardak kaynar suda.','Papatyagiller alerjisinde dikkat. Gebelikte ağızdan kullanılmamalı.'],
+['Ölmez Çiçek','Helichrysum arenarium','🌼','SI','Çiçek','Safra akışını artırıcı, hazımsızlık; hafif idrar söktürücü.','1 tatlı kaşığı çiçek 1 bardak kaynar suda 10 dk demlenir; yemekten önce, en fazla 4 hafta.','Safra yolu tıkanıklığında kullanılmamalı.'],
+['Dağ Çayı','Sideritis spp.','🏔️','RSUB','Çiçekli toprak üstü kısım','Soğuk algınlığı, öksürük ve boğaz ağrısı; hazımsızlık; yatıştırıcı. Anadolu\'ya özgü pek çok türü vardır.','1 dal veya 1 yemek kaşığı 1 bardak suda 5 dk kaynatılır ya da demlenir; ballı ve limonlu içilir.','Genelde güvenlidir; gebelikte yüksek dozdan kaçınılmalı.'],
+['Yeşil Çay','Camellia sinensis','🍵','MKB','Yaprak','Antioksidan; metabolizma ve kilo kontrolüne destek; zihinsel uyanıklık.','1 tatlı kaşığı yaprak 80 °C suda 2–3 dk demlenir; günde 2–3 bardak.','Kafein içerir; uykusuzluk ve çarpıntı yapabilir. Yüksek doz ekstre takviyeleri karaciğere zarar verebilir. Demir emilimini azaltır.'],
+['Böğürtlen Yaprağı','Rubus fruticosus','🍇','SC','Yaprak','Hafif ishalde kabız edici (tanen); ağız ve boğaz iltihabında gargara.','1–2 tatlı kaşığı yaprak 1 bardak kaynar suda 10 dk demlenir; günde 2–3 bardak.','Uzun süreli kullanımda mide tahrişi yapabilir.'],
+['Sumak','Rhus coriaria','🟥','SM','Meyve','Antioksidan; hazımsızlık; kan şekeri ve kolesterol dengesine destek.','Yemeklerde ve salatalarda baharat olarak; ekşili şerbet yapılır.','Yalnızca yenilebilir sumak (Rhus coriaria) kullanılmalı; zehirli süs sumakları ile karıştırılmamalı.'],
+['Keçiboynuzu','Ceratonia siliqua','🍫','SM','Meyve','İshal (özellikle çocuklarda unu); lif kaynağı; doğal tatlandırıcı.','Kuru meyve çiğnenir; pekmezi günde 1–2 yemek kaşığı.','Pekmezi şeker içerir; diyabette ölçülü tüketilmeli.'],
+['Çemen Otu','Trigonella foenum-graecum','🟨','MSZ','Tohum','Kan şekerinin dengelenmesine destek; iştah açıcı; emziren annelerde süt artırıcı olarak geleneksel kullanım.','1 çay kaşığı tohum 1 bardak suda 5 dk kaynatılır; ya da öğütülmüş tohum yemeklere.','Gebelikte kullanılmamalı (rahim kasılması). Şeker ilacı ve kan sulandırıcılarla etkileşir. Fıstık-nohut alerjisinde dikkat.'],
+['Maydanoz','Petroselinum crispum','🌿','IS','Yaprak, kök, tohum','İdrar söktürücü; gaz giderici; C vitamini ve K vitamini kaynağı.','Taze yaprak salata ve yemeklerde bolca; kök suyu kaynatılarak içilir.','Tohumu ve yağı gebelikte kullanılmamalı. Varfarin kullananlar yüksek miktarda tüketmemeli (K vitamini).'],
+['Hibiskus','Hibiscus sabdariffa','🌺','KM','Çiçek kaliksi','Tansiyonun hafifçe düşürülmesine destek; antioksidan.','1 tatlı kaşığı 1 bardak kaynar suda 5–10 dk demlenir; sıcak veya soğuk içilir.','Tansiyon ilacı kullananlarda tansiyonu fazla düşürebilir. Gebelikte önerilmez.'],
+['Kudret Narı','Momordica charantia','🥒','MC','Meyve','Kan şekerinin dengelenmesine destek; zeytinyağında bekletilen meyvesi mide ve cilt yaralarında geleneksel kullanım.','Olgun meyve zeytinyağında bekletilerek; az miktarda tüketilir.','Şeker ilacıyla birlikte kan şekerini fazla düşürebilir. Gebelikte kullanılmamalı. Tohumları çocuklara zararlıdır.'],
+['Ayva','Cydonia oblonga','🍐','RS','Yaprak, çekirdek, meyve','Öksürük ve boğaz tahrişi (çekirdek jeli); ishal (meyve); yaprak çayı soğuk algınlığında.','Yaprak: 2–3 yaprak 1 bardak suda 10 dk demlenir. Çekirdek bütün olarak suda bekletilip jeli kullanılır.','Çekirdekler kesinlikle kırılmamalı, çiğnenmemeli (siyanojenik glikozit).'],
+['Fesleğen','Ocimum basilicum','🌱','SU','Yaprak','Gaz, şişkinlik ve hazımsızlık; hafif yatıştırıcı.','Taze yapraklar yemek ve salatalarda; çay: 1 tatlı kaşığı 1 bardak kaynar suda 5 dk.','Gebelikte yağı ve yüksek dozu önerilmez.']
+];
+
 // ───────── yönlendirme ─────────
 let stack=[{p:'home'}],tab='home',st={};
-const TITLES={health:'Sağlık',nutrition:'Beslenme',finance:'Finans',backup:'Yedekleme',settings:'Ayarlar',reminders:'Hatırlatıcılar',stats:'İstatistikler',tasks:'Görevler',reports:'Raporlar'};
+const TITLES={health:'Sağlık',nutrition:'Beslenme',finance:'Finans',backup:'Yedekleme',settings:'Ayarlar',reminders:'Hatırlatıcılar',stats:'İstatistikler',tasks:'Görevler',reports:'Raporlar',plants:'Şifalı Bitkiler'};
 function go(p,a={}){
   if(['home','stats','tasks','reports'].includes(p)){tab=p;stack=[{p}]}
   else if(MODINFO[p])stack.push({p:'module',key:p});
@@ -315,7 +383,7 @@ pages.home=()=>{
     <div class="card" onclick="go('finance')"><div class="e">💰</div><div class="n">Finans</div><div class="v" style="color:${net<0?'var(--r)':'var(--p)'};font-size:16.5px">${money(net,0)}</div><div class="mu">Bu Ay (net)</div><div class="bar"><i style="width:${inc?clamp(net/inc*100,0,100):0}%;background:var(--a)"></i></div></div>
     <div class="card" onclick="go('tasks')"><div class="e">✅</div><div class="n">Görev</div><div class="v" style="color:var(--o)">${done} / ${tt.length}</div><div class="mu">Tamamlandı</div><div class="bar"><i style="width:${tt.length?done/tt.length*100:0}%;background:var(--o)"></i></div></div>
   </div>
-  <div class="mods">${MODULES.map(m=>`<button class="mod" onclick="go('${m[0]}')"><span class="e">${m[1]}</span>${m[2]}</button>`).join('')}</div>
+  <div class="mods">${MODULES.map(m=>m[0]==='plants'?`<button class="mod wide" onclick="go('plants')"><span class="e">🌿</span><span><b>Şifalı Bitkiler Rehberi</b><br><small>${PLANTS.length} bitki · kullanım ve dikkat edilecekler</small></span></button>`:`<button class="mod" onclick="go('${m[0]}')"><span class="e">${m[1]}</span>${m[2]}</button>`).join('')}</div>
   </div><div>
   <div class="card"><div class="row"><span class="st">Bugünün Hatırlatıcıları</span><span class="sp"></span><a style="color:var(--a);font-weight:700;cursor:pointer;font-size:14px" onclick="go('reminders')">Tümünü Gör ›</a></div>
    <div style="margin-top:8px">${rems.length?rems.map(r=>{const d=r.done===T.toDateString();return`<div class="rem"><button class="chk ${d?'on':''}" onclick="togRem(${r.id})">${d?'✓':''}</button><span>${r.time}</span><span>${r.icon}</span><span class="${d?'done':''}">${esc(r.title)}</span></div>`}).join(''):'<p class="mu">Bugün için hatırlatıcı yok.</p>'}</div></div>
@@ -323,7 +391,7 @@ pages.home=()=>{
   <div style="text-align:center;margin-top:6px;font-size:12px;color:var(--mu)">VİTANEX · <b style="color:var(--pd)">TROÇKİ</b> tarafından geliştirildi<div style="font-size:11px;margin-top:2px">Düşün • Keşfet • Üret • Paylaş</div></div>`};
 pages.home.fab=()=>sheet('Hızlı Ekle',[['❤️ Sağlık Kaydı',addHealth],['💧 Su (+200 ml)',()=>{S.water.push({date:new Date(),ml:200});render();toast('+200 ml su eklendi')}],['💰 Gelir / Gider',()=>addFin()],['✅ Görev',()=>addTask()],['🍽️ Öğün',()=>addMeal()],['⏰ Hatırlatıcı',()=>addRem()]]);
 window.togRem=id=>{const r=S.rem.find(x=>x.id===id),T=today().toDateString();r.done=r.done===T?null:T;render()};
-window.menu=()=>sheet('TROÇKİ VİTANEX',[['Hatırlatıcılar',()=>go('reminders')],['Beslenme',()=>go('nutrition')],['Eğitim',()=>go('education')],['Kişisel Gelişim',()=>go('development')],['Sosyal Yaşam',()=>go('social')],['İş / Kariyer',()=>go('career')],['Yedekleme',()=>go('backup')],['Ayarlar',()=>go('settings')],[dark?'☀️ Açık tema':'🌙 Koyu tema',()=>setDark(!dark)]]);
+window.menu=()=>sheet('TROÇKİ VİTANEX',[['🌿 Şifalı Bitkiler',()=>go('plants')],['Hatırlatıcılar',()=>go('reminders')],['Beslenme',()=>go('nutrition')],['Eğitim',()=>go('education')],['Kişisel Gelişim',()=>go('development')],['Sosyal Yaşam',()=>go('social')],['İş / Kariyer',()=>go('career')],['Yedekleme',()=>go('backup')],['Ayarlar',()=>go('settings')],[dark?'☀️ Açık tema':'🌙 Koyu tema',()=>setDark(!dark)]]);
 window.bell=()=>{const T=today().toDateString(),n=hm(new Date());const p=S.rem.filter(r=>r.active&&r.done!==T).sort((a,b)=>a.time.localeCompare(b.time));
   sheet('Bildirimler',p.length?p.map(r=>[`${r.time}  ${r.icon} ${r.title}${r.time<=n?'  (zamanı geldi)':''}`,()=>togRem(r.id)]):[['Bekleyen hatırlatıcı yok 👍',()=>{}]])};
 
@@ -495,11 +563,39 @@ window.buildRep=()=>{const r=st.rep||{type:0,range:'month'},T=today(),M=addM(T,0
   if(all)sec('Eğitim · Gelişim · Sosyal · Kariyer',Object.keys(MODINFO).map(k=>{const l=S.mods.filter(x=>x.mod===k);return[MODINFO[k][0],`${l.length} kayıt, ${l.filter(x=>x.status===2).length} tamamlandı`]}));
   st.rep={...r,txt:L.join('\n').trim(),sub:`${s.toLocaleDateString(TR)} – ${addD(e,-1).toLocaleDateString(TR)}`};render()};
 
+
+// ŞİFALI BİTKİLER
+const trLow=s=>s.toLocaleLowerCase('tr-TR');
+function plantOfDay(){const d=today();return Math.floor(d.getTime()/864e5)%PLANTS.length}
+function plantList(){const q=st.pq||'',cat=st.pc||'',fav=S.fav||[];
+  const list=PLANTS.map((p,i)=>({p,i})).filter(({p,i})=>(cat==='fav'?fav.includes(i):!cat||p[3].includes(cat))&&(!q||trLow(p[0]+' '+p[1]+' '+p[5]+' '+[...p[3]].map(c=>PCAT[c][1]).join(' ')).includes(trLow(q))));
+  return`<div class="card" style="padding:4px 14px">${list.length?list.map(({p,i})=>`<div class="li" onclick="go('plant',{i:${i}})"><span class="e" style="font-size:24px">${p[2]}</span><div style="flex:1;min-width:0"><div class="t">${esc(p[0])}${fav.includes(i)?' ⭐':''}</div><div class="mu" style="font-style:italic">${esc(p[1])}</div><div class="mu" style="margin-top:2px">${[...p[3]].map(c=>PCAT[c][1]).join(' · ')}</div></div><span style="color:var(--mu);font-size:20px">›</span></div>`).join(''):`<p class="mu" style="padding:14px 0">${cat==='fav'?'Henüz favori bitkiniz yok. Bir bitkiyi açıp ⭐ ile ekleyebilirsiniz.':'Aramanıza uygun bitki bulunamadı.'}</p>`}</div>`}
+pages.plants=()=>{
+  const q=st.pq||'',cat=st.pc||'',fav=S.fav||[];
+  const pd=PLANTS[plantOfDay()];
+  return`<div class="card" style="background:linear-gradient(135deg,#1B7F4B,#22B573);color:#fff;cursor:pointer" onclick="go('plant',{i:${plantOfDay()}})">
+    <div style="font-size:12px;font-weight:700;letter-spacing:2px;opacity:.85">🌿 GÜNÜN BİTKİSİ</div>
+    <div class="row" style="margin-top:6px"><span style="font-size:34px">${pd[2]}</span><div><div style="font-size:19px;font-weight:700">${esc(pd[0])}</div><div style="font-size:12px;font-style:italic;opacity:.9">${esc(pd[1])}</div></div></div>
+    <div style="font-size:13px;margin-top:8px;line-height:1.45">${esc(pd[5])}</div></div>
+  <div class="card f" style="padding:10px 12px"><input id="pq" type="search" placeholder="🔍  Bitki veya şikâyet ara (örn. öksürük, uyku)" value="${esc(q)}"></div>
+  <div class="chips"><button class="chip ${!cat?'on':''}" onclick="st.pc='';render()">Tümü (${PLANTS.length})</button><button class="chip ${cat==='fav'?'on':''}" onclick="st.pc='fav';render()">⭐ Favoriler (${fav.length})</button>${Object.entries(PCAT).map(([k,v])=>`<button class="chip ${cat===k?'on':''}" onclick="st.pc='${k}';render()">${v[0]} ${v[1]}</button>`).join('')}</div>
+  <div id="plist">${plantList()}</div>
+  <p class="mu" style="line-height:1.5;margin:4px 2px 0">⚠️ Bu rehber geleneksel kullanım bilgisi sunar; tanı ve tedavi yerine geçmez. Hastalığınız varsa, ilaç kullanıyorsanız, gebe veya emziriyorsanız bitkisel ürün kullanmadan önce doktorunuza ya da eczacınıza danışın.</p>`};
+pages.plant=c=>{const p=PLANTS[c.i],fav=(S.fav||[]).includes(c.i);c.title=p[0];
+  const sec=(t,x,col)=>`<div class="card"><span class="st" style="font-size:15px${col?';color:'+col:''}">${t}</span><p style="margin-top:6px;font-size:14.5px;line-height:1.55">${esc(x)}</p></div>`;
+  return`<div class="card" style="text-align:center"><div style="font-size:54px">${p[2]}</div><div style="font-size:22px;font-weight:700;color:var(--pd)">${esc(p[0])}</div><div class="mu" style="font-style:italic;font-size:13px">${esc(p[1])}</div>
+    <div class="chips" style="justify-content:center;flex-wrap:wrap;margin:10px 0 0">${[...p[3]].map(k=>`<button class="chip" onclick="st.pc='${k}';back()">${PCAT[k][0]} ${PCAT[k][1]}</button>`).join('')}</div></div>
+  ${sec('🌱 Kullanılan kısım',p[4])}${sec('✨ Geleneksel kullanım',p[5])}${sec('🍵 Nasıl kullanılır?',p[6])}${sec('⚠️ Dikkat',p[7],'var(--r)')}
+  <div class="g2"><button class="btn2" onclick="togFav(${c.i})">${fav?'★ Favoriden çıkar':'☆ Favorilere ekle'}</button><button class="btn" onclick="plantRem(${c.i})">⏰ Hatırlatıcı</button></div>
+  <p class="mu" style="line-height:1.5;margin-top:12px">Bilgiler geleneksel ve bilimsel kaynaklara dayalı genel bilgidir; tedavi yerine geçmez.</p>`};
+window.togFav=i=>{S.fav=S.fav||[];const k=S.fav.indexOf(i);if(k<0){S.fav.push(i);toast('Favorilere eklendi ⭐')}else{S.fav.splice(k,1);toast('Favorilerden çıkarıldı')}render()};
+window.plantRem=i=>addRem({title:PLANTS[i][0]+' çayı',time:'20:00',icon:'🍵',_new:true});
+
 // HATIRLATICILAR / YEDEK / AYARLAR
 pages.reminders=()=>`<p class="mu" style="margin-bottom:10px;font-size:13px">Her gün tekrarlanan hatırlatıcılarınız. Ana sayfada görünür.</p><div class="card" style="padding:4px 14px">${[...S.rem].sort((a,b)=>a.time.localeCompare(b.time)).map(r=>`<div class="li" onclick="remTap(${r.id})"><b style="color:var(--p);width:50px">${r.time}</b><span class="e">${r.icon}</span><span style="flex:1">${esc(r.title)}</span><span class="mu">${r.active?'Açık':'Kapalı'}</span></div>`).join('')}</div>`;
 pages.reminders.fab=()=>addRem();
-window.addRem=(r)=>form(r?'Hatırlatıcıyı Düzenle':'Yeni Hatırlatıcı',[{k:'title',l:'Ne hatırlatılsın?',ph:'örn. Tansiyon ilacı'},{k:'time',l:'Saat',t:'time'},{k:'icon',l:'Simge',t:'select',o:['💧','🚶','🍽️','💊','📖','📅','🏃','😴','🧘','📞','🛒','⏰']}],r||{time:'09:00',icon:'⏰'},
-  v=>{if(!v.title.trim())return'Hatırlatıcı metnini yazın.';if(r)Object.assign(r,v);else S.rem.push({id:uid++,...v,active:true,done:null})});
+window.addRem=(r)=>form(r&&!r._new?'Hatırlatıcıyı Düzenle':'Yeni Hatırlatıcı',[{k:'title',l:'Ne hatırlatılsın?',ph:'örn. Tansiyon ilacı'},{k:'time',l:'Saat',t:'time'},{k:'icon',l:'Simge',t:'select',o:['💧','🚶','🍽️','💊','📖','📅','🏃','😴','🧘','📞','🛒','🍵','🌿','⏰']}],r||{time:'09:00',icon:'⏰'},
+  v=>{if(!v.title.trim())return'Hatırlatıcı metnini yazın.';if(r&&!r._new)Object.assign(r,v);else S.rem.push({id:uid++,...v,active:true,done:null})});
 window.remTap=id=>{const r=S.rem.find(x=>x.id===id);sheet(`${r.time} ${r.title}`,[['Düzenle',()=>addRem(r)],[r.active?'Kapat':'Aç',()=>{r.active=!r.active;render()}],['Sil',()=>{S.rem.splice(S.rem.indexOf(r),1);render()},'del']])};
 pages.backup=()=>`<div class="card"><span class="st">☁️ Yedekleme</span><p class="mu" style="margin:8px 0;font-size:13px">Tüm kayıtlarınız bu tarayıcıda saklanır. Yedek dosyasını (JSON) indirip Drive'a, e-postaya veya bilgisayarınıza koyabilir, başka bir cihazda geri yükleyebilirsiniz.</p>
   <button class="btn" onclick="exportData()">⬇ Yedeği İndir (.json)</button><button class="btn2" style="width:100%;margin-top:8px" onclick="importFile.click()">⬆ Yedekten Geri Yükle…</button>
@@ -511,9 +607,10 @@ pages.settings=()=>{stack[stack.length-1].isSettings=true;return renderForm({fie
 const TABS=[['home','Ana Sayfa'],['stats','İstatistikler'],['tasks','Görevler'],['reports','Raporlar']];
 function render(){
   const c=cur(),p=c.p;
-  const title=p==='form'?c.title:p==='module'?MODINFO[c.key][0]:TITLES[p];
-  $('#navwrap').innerHTML=p==='home'?'':`<div class="nav">${stack.length>1?'<button onclick="back()">←</button>':''}<span>${esc(title)}</span></div>`;
   $('#content').innerHTML=p==='form'?renderForm(c):pages[p](c);
+  const title=p==='form'||p==='plant'?c.title:p==='module'?MODINFO[c.key][0]:TITLES[p];
+  $('#navwrap').innerHTML=p==='home'?'':`<div class="nav">${stack.length>1?'<button onclick="back()">←</button>':''}<span>${esc(title)}</span></div>`;
+  if(p==='plants'){const i=$('#pq');i.oninput=()=>{st.pq=i.value;$('#plist').innerHTML=plantList()}}
   if(p==='form')bindForm(c);
   if(c.isSettings){$('#save').onclick=()=>{const v={};document.querySelectorAll('[data-k]').forEach(el=>v[el.dataset.k]=el.value);S.user=v.user.trim()||'Troçki';['water','sleep','ex','cal'].forEach(k=>S.goals[k]=P(v[k])||S.goals[k]);toast('Ayarlar kaydedildi ✓')}}
   const fab=p!=='form'&&pages[p]&&pages[p].fab;$('#fabwrap').innerHTML=fab?'<button class="fab" id="fab">+</button>':'';if(fab)$('#fab').onclick=()=>pages[p].fab();
@@ -525,11 +622,11 @@ function splash(){const el=document.createElement('div');el.className='splash';
   $('#screen').appendChild(el);setTimeout(()=>{el.style.opacity=0;setTimeout(()=>el.remove(),400)},1900)}
 // ───────── kalıcı kayıt (tarayıcı) ─────────
 const KEY='trocki_vitanex_v1';
-function empty(){S={user:'Troçki',goals:{water:2000,sleep:8,ex:30,cal:2000},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[]};
+function empty(){S={user:'Troçki',goals:{water:2000,sleep:8,ex:30,cal:2000},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[],fav:[]};
   [['08:00','💧','Su iç (200 ml)'],['09:00','🚶','Sabah yürüyüşü (30 dk)'],['12:00','🍽️','Öğle yemeği'],['15:00','📖','Kitap oku (15 dk)']].forEach(([t,i,x])=>S.rem.push({id:uid++,time:t,icon:i,title:x,active:true,done:null}))}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function revive(o){['health','water','meals','fin','tasks','mods'].forEach(k=>(o[k]||[]).forEach(x=>{if(x.date)x.date=new Date(x.date)}));
-  o.goals=Object.assign({water:2000,sleep:8,ex:30,cal:2000},o.goals||{});['health','water','meds','meals','fin','tasks','mods','rem'].forEach(k=>o[k]=o[k]||[]);
+  o.goals=Object.assign({water:2000,sleep:8,ex:30,cal:2000},o.goals||{});['health','water','meds','meals','fin','tasks','mods','rem','fav'].forEach(k=>o[k]=o[k]||[]);
   let m=0;['health','meds','meals','fin','tasks','mods','rem'].forEach(k=>o[k].forEach(x=>{if(x.id>m)m=x.id}));uid=m+1;return o}
 function load(){try{const t=localStorage.getItem(KEY);if(t){S=revive(JSON.parse(t));return true}}catch(e){}return false}
 function lastBackup(){try{const t=localStorage.getItem('tv_lastbackup');return t?new Date(t).toLocaleString(TR):'henüz yok'}catch(e){return 'henüz yok'}}
