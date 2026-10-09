@@ -40,8 +40,7 @@ Kayıtlar grafiklere ve raporlara dönüşür; **tüm veriler yalnızca cihazın
 ```
 VITANEX.sln              Visual Studio çözümü
 VITANEX/                 Android uygulaması (C# · .NET 10 MAUI · SQLite)
-web/                     iPhone / Web sürümü (tek HTML + PWA)
-docs/                    Ekran görüntüleri
+docs/                    iPhone / Web sürümü (GitHub Pages) + ekran görüntüleri
 .github/workflows/       Otomatik APK derleme ve web yayını
 APK_OLUSTUR.bat          Bilgisayarda tek tıkla APK
 ```
