@@ -2,3 +2,5 @@
 
 /* V-TANEX detaylı modüller */
 .record{background:#111f36;border:1px solid #304563;border-radius:15px;padding:14px;margin:12px 0}.record p{font-size:14px;margin:9px 0;color:#d3def2;overflow-wrap:anywhere}.record .row b{color:#91baff}.btnlink{display:inline-flex;align-items:center;text-decoration:none;min-height:46px}.stat b{overflow-wrap:anywhere;font-size:clamp(15px,4vw,23px)}
+
+.walk-home{margin:16px 0}.walk-home .row{gap:12px;flex-wrap:wrap}.walk-home .btnlink{display:inline-block;margin-top:12px;text-decoration:none}
