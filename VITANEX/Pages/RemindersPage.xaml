@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.RemindersPage"
+             Title="Hatırlatıcılar">
+
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16,16,16,90" Spacing="12" MaximumWidthRequest="760">
+                <Label Style="{StaticResource Muted}" FontSize="13"
+                       Text="Her gün tekrarlanan hatırlatıcılarınız. Ana sayfada 'Bugünün Hatırlatıcıları' bölümünde görünür; daireye dokunarak tamamlandı işaretleyebilirsiniz." />
+                <Border Style="{StaticResource Card}" Padding="14,6">
+                    <VerticalStackLayout>
+                        <VerticalStackLayout x:Name="ReminderList">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="56,36,*,Auto" Padding="0,10" ColumnSpacing="6">
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnTapped" />
+                                        </Grid.GestureRecognizers>
+                                        <Label Text="{Binding Time}" FontSize="16" FontAttributes="Bold"
+                                               TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding Icon}" FontSize="20" VerticalOptions="Center" />
+                                        <Label Grid.Column="2" Text="{Binding Title}" FontSize="15" VerticalOptions="Center" />
+                                        <Label Grid.Column="3" Text="{Binding StateText}" FontSize="12"
+                                               TextColor="{DynamicResource TextMuted}" VerticalOptions="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <Label x:Name="EmptyLabel" Text="Hatırlatıcı yok." Style="{StaticResource Muted}" Margin="0,10" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Button Text="+" FontSize="32" Padding="0" WidthRequest="62" HeightRequest="62" CornerRadius="31"
+                BackgroundColor="{StaticResource Accent}" HorizontalOptions="End" VerticalOptions="End"
+                Margin="0,0,20,20" Clicked="OnAdd" />
+    </Grid>
+</ContentPage>

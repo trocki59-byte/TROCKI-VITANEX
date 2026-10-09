@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:pages="clr-namespace:VITANEX.Pages"
+       x:Class="VITANEX.AppShell"
+       Shell.FlyoutBehavior="Disabled"
+       Shell.BackgroundColor="{DynamicResource NavBg}"
+       Shell.ForegroundColor="{DynamicResource PrimaryDark}"
+       Shell.TitleColor="{DynamicResource PrimaryDark}"
+       Shell.TabBarBackgroundColor="{DynamicResource NavBg}"
+       Shell.TabBarForegroundColor="{StaticResource Primary}"
+       Shell.TabBarTitleColor="{StaticResource Primary}"
+       Shell.TabBarUnselectedColor="{DynamicResource TabUnselected}">
+
+    <TabBar>
+        <ShellContent Title="Ana Sayfa" Icon="tab_home.png" Route="home"
+                      ContentTemplate="{DataTemplate pages:HomePage}" />
+        <ShellContent Title="İstatistikler" Icon="tab_stats.png" Route="stats"
+                      ContentTemplate="{DataTemplate pages:StatisticsPage}" />
+        <ShellContent Title="Görevler" Icon="tab_tasks.png" Route="tasks"
+                      ContentTemplate="{DataTemplate pages:TasksPage}" />
+        <ShellContent Title="Raporlar" Icon="tab_reports.png" Route="reports"
+                      ContentTemplate="{DataTemplate pages:ReportsPage}" />
+    </TabBar>
+
+</Shell>

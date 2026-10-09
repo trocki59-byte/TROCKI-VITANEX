@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+        <Setter Property="BackgroundColor" Value="{DynamicResource PageBg}" />
+    </Style>
+
+    <Style TargetType="Label">
+        <Setter Property="TextColor" Value="{DynamicResource TextDark}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style TargetType="Entry">
+        <Setter Property="TextColor" Value="{DynamicResource TextDark}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource Placeholder}" />
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+
+    <Style TargetType="Editor">
+        <Setter Property="TextColor" Value="{DynamicResource TextDark}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource Placeholder}" />
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+
+    <Style TargetType="Picker">
+        <Setter Property="TextColor" Value="{DynamicResource TextDark}" />
+        <Setter Property="TitleColor" Value="{DynamicResource Placeholder}" />
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+
+    <Style TargetType="DatePicker">
+        <Setter Property="TextColor" Value="{DynamicResource TextDark}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Format" Value="dd.MM.yyyy" />
+    </Style>
+
+    <Style TargetType="TimePicker">
+        <Setter Property="TextColor" Value="{DynamicResource TextDark}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Format" Value="HH:mm" />
+    </Style>
+
+    <Style TargetType="ProgressBar">
+        <Setter Property="ProgressColor" Value="{StaticResource Primary}" />
+        <Setter Property="HeightRequest" Value="8" />
+    </Style>
+
+    <Style TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+    </Style>
+
+    <Style x:Key="SecondaryButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryLight}" />
+        <Setter Property="TextColor" Value="{DynamicResource ChipText}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="MinimumHeightRequest" Value="40" />
+    </Style>
+
+    <Style x:Key="DangerButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{DynamicResource DangerBg}" />
+        <Setter Property="TextColor" Value="{StaticResource Red}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="Padding" Value="12,8" />
+    </Style>
+
+    <Style x:Key="ChipButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryLight}" />
+        <Setter Property="TextColor" Value="{DynamicResource ChipText}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="Padding" Value="12,6" />
+        <Setter Property="HeightRequest" Value="38" />
+        <Setter Property="MinimumHeightRequest" Value="36" />
+    </Style>
+
+    <Style x:Key="Card" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{DynamicResource CardBg}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+        <Setter Property="Padding" Value="14" />
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="#0B4FD6" Offset="0,3" Radius="10" Opacity="0.10" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SectionTitle" TargetType="Label">
+        <Setter Property="FontSize" Value="17" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{DynamicResource PrimaryDark}" />
+    </Style>
+
+    <Style x:Key="Muted" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{DynamicResource TextMuted}" />
+    </Style>
+
+    <Style x:Key="FieldLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{DynamicResource TextMuted}" />
+        <Setter Property="Margin" Value="0,6,0,0" />
+    </Style>
+
+    <Style x:Key="BigValue" TargetType="Label">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{DynamicResource PrimaryDark}" />
+    </Style>
+
+</ResourceDictionary>

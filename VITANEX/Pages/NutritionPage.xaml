@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.NutritionPage"
+             Title="Beslenme">
+
+    <ScrollView>
+        <Grid x:Name="Host" Padding="16" ColumnSpacing="12">
+            <VerticalStackLayout x:Name="ColA" Spacing="12">
+
+                <!-- GÜN SEÇİCİ + ÖZET -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Button Text="‹" Style="{StaticResource SecondaryButton}" FontSize="20" WidthRequest="48" Clicked="OnPrevDay" />
+                            <Label Grid.Column="1" x:Name="DayTitle" Style="{StaticResource SectionTitle}"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Button Grid.Column="2" Text="›" Style="{StaticResource SecondaryButton}" FontSize="20" WidthRequest="48" Clicked="OnNextDay" />
+                        </Grid>
+                        <Label x:Name="CalorieLabel" FontSize="15" FontAttributes="Bold" />
+                        <ProgressBar x:Name="CalorieBar" ProgressColor="{StaticResource Green}" />
+                        <Label x:Name="WaterLabel" FontSize="14" />
+                        <ProgressBar x:Name="WaterBar" ProgressColor="{StaticResource Accent}" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button Text="💧 +200 ml" Style="{StaticResource SecondaryButton}" Clicked="OnWater200" />
+                            <Button Grid.Column="1" Text="💧 +500 ml" Style="{StaticResource SecondaryButton}" Clicked="OnWater500" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ÖĞÜNLER -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="🍽️ Öğünler" Style="{StaticResource SectionTitle}" VerticalOptions="Center" />
+                            <Button Grid.Column="1" Text="+ Öğün" Style="{StaticResource SecondaryButton}" Clicked="OnAddMeal" />
+                        </Grid>
+                        <VerticalStackLayout x:Name="MealList" Spacing="2">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="40,*,Auto" Padding="0,8" ColumnSpacing="8">
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnMealTapped" />
+                                        </Grid.GestureRecognizers>
+                                        <Label Text="{Binding Icon}" FontSize="24" VerticalOptions="Center" />
+                                        <VerticalStackLayout Grid.Column="1">
+                                            <Label Text="{Binding MealType}" FontAttributes="Bold" TextColor="{StaticResource Primary}" FontSize="13" />
+                                            <Label Text="{Binding Description}" FontSize="15" />
+                                            <Label Text="{Binding Note}" Style="{StaticResource Muted}" />
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Column="2" VerticalOptions="Center">
+                                            <Label Text="{Binding CaloriesText}" FontAttributes="Bold" HorizontalOptions="End" />
+                                            <Label Text="{Binding TimeText}" Style="{StaticResource Muted}" HorizontalOptions="End" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <Label x:Name="NoMeals" Text="Bu gün için öğün kaydı yok." Style="{StaticResource Muted}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- HAFTALIK -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Son 7 Gün — Kalori" Style="{StaticResource SectionTitle}" />
+                        <GraphicsView x:Name="WeekChart" HeightRequest="190" />
+                        <Label x:Name="WeekSummary" Style="{StaticResource Muted}" FontSize="13" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+            <VerticalStackLayout x:Name="ColB" Grid.Column="1" Spacing="12" IsVisible="False" />
+        </Grid>
+    </ScrollView>
+</ContentPage>

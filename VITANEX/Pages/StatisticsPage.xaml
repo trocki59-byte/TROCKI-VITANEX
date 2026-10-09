@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.StatisticsPage"
+             Title="İstatistikler">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+
+            <Grid x:Name="PeriodBar" ColumnDefinitions="*,*,*,*" ColumnSpacing="6" MaximumWidthRequest="720">
+                <Button Text="Günlük" ClassId="Daily" Style="{StaticResource ChipButton}" Clicked="OnPeriod" />
+                <Button Grid.Column="1" Text="Haftalık" ClassId="Weekly" Style="{StaticResource ChipButton}" Clicked="OnPeriod" />
+                <Button Grid.Column="2" Text="Aylık" ClassId="Monthly" Style="{StaticResource ChipButton}" Clicked="OnPeriod" />
+                <Button Grid.Column="3" Text="Yıllık" ClassId="Yearly" Style="{StaticResource ChipButton}" Clicked="OnPeriod" />
+            </Grid>
+
+            <Grid x:Name="Host" ColumnSpacing="12">
+                <VerticalStackLayout x:Name="ColA" Spacing="12">
+
+                    <!-- GENEL İLERLEME -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Genel İlerleme" Style="{StaticResource SectionTitle}" />
+                            <Label x:Name="PeriodLabel" Style="{StaticResource Muted}" />
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                                <VerticalStackLayout>
+                                    <GraphicsView x:Name="DonutHealth" HeightRequest="110" />
+                                    <Label Text="Sağlık" FontAttributes="Bold" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1">
+                                    <GraphicsView x:Name="DonutFinance" HeightRequest="110" />
+                                    <Label Text="Finans" FontAttributes="Bold" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2">
+                                    <GraphicsView x:Name="DonutTasks" HeightRequest="110" />
+                                    <Label Text="Görevler" FontAttributes="Bold" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Label x:Name="SummaryLabel" FontSize="13" TextColor="{DynamicResource TextMuted}" Margin="0,6,0,0" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- FİNANS -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Gelir / Gider" Style="{StaticResource SectionTitle}" />
+                            <GraphicsView x:Name="FinanceChart" HeightRequest="200" />
+                            <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
+                                <Label Text="■ Gelir" TextColor="{StaticResource Green}" FontSize="13" />
+                                <Label Text="■ Gider" TextColor="{StaticResource Red}" FontSize="13" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- SAĞLIK SKORU -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Sağlık Skoru (%)" Style="{StaticResource SectionTitle}" />
+                            <GraphicsView x:Name="HealthChart" HeightRequest="190" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- KİLO -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Ortalama Kilo (kg)" Style="{StaticResource SectionTitle}" />
+                            <GraphicsView x:Name="WeightChart" HeightRequest="190" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- GÖREVLER -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Tamamlanan Görevler" Style="{StaticResource SectionTitle}" />
+                            <GraphicsView x:Name="TaskChart" HeightRequest="190" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- SU -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Su Tüketimi (litre)" Style="{StaticResource SectionTitle}" />
+                            <GraphicsView x:Name="WaterChart" HeightRequest="190" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+                <VerticalStackLayout x:Name="ColB" Grid.Column="1" Spacing="12" IsVisible="False" />
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

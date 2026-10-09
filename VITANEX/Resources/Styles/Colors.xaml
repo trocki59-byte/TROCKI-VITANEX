@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Color x:Key="Primary">#0B4FD6</Color>
+    <Color x:Key="PrimaryDark">#0A2E8A</Color>
+    <Color x:Key="Accent">#1E88FF</Color>
+    <Color x:Key="PrimaryLight">#E6EEFC</Color>
+    <Color x:Key="PageBg">#F2F6FC</Color>
+    <Color x:Key="CardBg">#FFFFFF</Color>
+    <Color x:Key="TextDark">#0E1B3D</Color>
+    <Color x:Key="TextMuted">#5B6B8C</Color>
+    <Color x:Key="Line">#E3EAF5</Color>
+    <Color x:Key="NavBg">#FFFFFF</Color>
+    <Color x:Key="TabUnselected">#8A97B2</Color>
+    <Color x:Key="HeroBox">#E6FFFFFF</Color>
+    <Color x:Key="DangerBg">#FDE7EA</Color>
+    <Color x:Key="Placeholder">#9AA7C2</Color>
+    <Color x:Key="Surface2">#F4F7FC</Color>
+    <Color x:Key="ChipText">#0B4FD6</Color>
+
+    <Color x:Key="Green">#22B573</Color>
+    <Color x:Key="Orange">#FF8A1F</Color>
+    <Color x:Key="Red">#F0384B</Color>
+    <Color x:Key="Purple">#7B4DFF</Color>
+    <Color x:Key="Pink">#E8457C</Color>
+    <Color x:Key="Yellow">#FFB300</Color>
+
+</ResourceDictionary>

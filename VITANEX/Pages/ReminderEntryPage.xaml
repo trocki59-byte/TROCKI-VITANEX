@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.ReminderEntryPage"
+             Title="Hatırlatıcı">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12" MaximumWidthRequest="720">
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Ne hatırlatılsın?" Style="{StaticResource FieldLabel}" />
+                    <Entry x:Name="TitleField" Placeholder="örn. Tansiyon ilacı, kitap oku, randevu" />
+
+                    <Label Text="Saat" Style="{StaticResource FieldLabel}" />
+                    <TimePicker x:Name="TimeField" />
+
+                    <Label Text="Simge" Style="{StaticResource FieldLabel}" />
+                    <Grid x:Name="IconPanel" ColumnDefinitions="*,*,*,*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="6" RowSpacing="6" />
+
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+                        <Label Text="Aktif" Style="{StaticResource FieldLabel}" VerticalOptions="Center" Margin="0" />
+                        <Switch Grid.Column="1" x:Name="ActiveSwitch" IsToggled="True" OnColor="{StaticResource Accent}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+            <Button Text="Kaydet" Clicked="OnSave" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

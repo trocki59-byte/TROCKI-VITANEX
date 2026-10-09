@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.FinancePage"
+             Title="Finans">
+
+    <Grid>
+        <ScrollView>
+            <Grid x:Name="Host" Padding="16,16,16,90" ColumnSpacing="12">
+                <VerticalStackLayout x:Name="ColA" Spacing="12">
+
+                    <!-- AY ÖZETİ -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Button Text="‹" Style="{StaticResource SecondaryButton}" FontSize="20" WidthRequest="48" Clicked="OnPrevMonth" />
+                                <Label Grid.Column="1" x:Name="MonthTitle" Style="{StaticResource SectionTitle}"
+                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Button Grid.Column="2" Text="›" Style="{StaticResource SecondaryButton}" FontSize="20" WidthRequest="48" Clicked="OnNextMonth" />
+                            </Grid>
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                <VerticalStackLayout>
+                                    <Label Text="Gelir" Style="{StaticResource Muted}" HorizontalOptions="Center" />
+                                    <Label x:Name="IncomeLabel" FontAttributes="Bold" FontSize="15"
+                                           TextColor="{StaticResource Green}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1">
+                                    <Label Text="Gider" Style="{StaticResource Muted}" HorizontalOptions="Center" />
+                                    <Label x:Name="ExpenseLabel" FontAttributes="Bold" FontSize="15"
+                                           TextColor="{StaticResource Red}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2">
+                                    <Label Text="Net Durum" Style="{StaticResource Muted}" HorizontalOptions="Center" />
+                                    <Label x:Name="NetLabel" FontAttributes="Bold" FontSize="15"
+                                           TextColor="{StaticResource Primary}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Label x:Name="SavingLabel" Style="{StaticResource Muted}" FontSize="13" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- 6 AYLIK GRAFİK -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Son 6 Ay — Gelir / Gider" Style="{StaticResource SectionTitle}" />
+                            <GraphicsView x:Name="MonthChart" HeightRequest="200" />
+                            <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
+                                <Label Text="■ Gelir" TextColor="{StaticResource Green}" FontSize="13" />
+                                <Label Text="■ Gider" TextColor="{StaticResource Red}" FontSize="13" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- KATEGORİLER -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Gider Kategorileri" Style="{StaticResource SectionTitle}" />
+                            <VerticalStackLayout x:Name="CategoryList" Spacing="10" />
+                            <Label x:Name="NoCategories" Text="Bu ay gider yok." Style="{StaticResource Muted}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- İŞLEMLER -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="İşlemler" Style="{StaticResource SectionTitle}" />
+                            <VerticalStackLayout x:Name="RecordList">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="36,*,Auto" Padding="0,8" ColumnSpacing="8">
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnRecordTapped" />
+                                            </Grid.GestureRecognizers>
+                                            <Label Text="{Binding Icon}" FontSize="20" VerticalOptions="Center" />
+                                            <VerticalStackLayout Grid.Column="1">
+                                                <Label Text="{Binding Description}" FontSize="15" FontAttributes="Bold" />
+                                                <Label Text="{Binding SubText}" Style="{StaticResource Muted}" />
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="2" Text="{Binding AmountText}" TextColor="{Binding AmountColor}"
+                                                   FontAttributes="Bold" FontSize="15" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                            <Label x:Name="NoRecords" Text="Bu ay kayıt yok. Sağ alttaki + ile ekleyin." Style="{StaticResource Muted}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+                <VerticalStackLayout x:Name="ColB" Grid.Column="1" Spacing="12" IsVisible="False" />
+            </Grid>
+        </ScrollView>
+
+        <Button Text="+" FontSize="32" Padding="0" WidthRequest="62" HeightRequest="62" CornerRadius="31"
+                BackgroundColor="{StaticResource Accent}" HorizontalOptions="End" VerticalOptions="End"
+                Margin="0,0,20,20" Clicked="OnAdd" />
+    </Grid>
+</ContentPage>

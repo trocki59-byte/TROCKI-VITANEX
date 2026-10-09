@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.HomePage"
+             Shell.NavBarIsVisible="False"
+             Title="Ana Sayfa">
+
+    <Grid>
+        <ScrollView>
+            <Grid x:Name="RootGrid" Padding="16,10,16,96" RowSpacing="14" ColumnSpacing="16">
+
+                <!-- ÜST BAŞLIK -->
+                <Grid x:Name="HeaderView" ColumnDefinitions="44,*,44">
+                    <Image x:Name="MenuIcon" Source="icon_menu.png" WidthRequest="28" HeightRequest="28"
+                           HorizontalOptions="Start" VerticalOptions="Center">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnMenuTapped" />
+                        </Image.GestureRecognizers>
+                    </Image>
+
+                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="0">
+                        <Label Text="TROÇKİ" FontSize="11" FontAttributes="Bold" CharacterSpacing="6"
+                               TextColor="{StaticResource Accent}" HorizontalOptions="Center" Margin="0,0,0,-4" />
+                        <HorizontalStackLayout Spacing="4" HorizontalOptions="Center">
+                            <Image Source="vitanex_leaf.png" HeightRequest="38" WidthRequest="46" VerticalOptions="Center" />
+                            <Label FontSize="30" FontAttributes="Bold" VerticalOptions="Center" CharacterSpacing="1">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="VİTA" TextColor="{DynamicResource PrimaryDark}" />
+                                        <Span Text="NEX" TextColor="{StaticResource Accent}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </HorizontalStackLayout>
+                        <Label Text="DAHA SAĞLIKLI • DAHA DENGELİ • DAHA ÜRETKEN BİR YAŞAM"
+                               FontSize="8.5" FontAttributes="Bold" CharacterSpacing="0.4"
+                               TextColor="{DynamicResource PrimaryDark}" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+
+                    <Grid Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" WidthRequest="36" HeightRequest="36">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBellTapped" />
+                        </Grid.GestureRecognizers>
+                        <Image x:Name="BellIcon" Source="icon_bell.png" WidthRequest="28" HeightRequest="28"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Border x:Name="Badge" IsVisible="False" BackgroundColor="{StaticResource Red}"
+                                StrokeThickness="0" StrokeShape="RoundRectangle 9"
+                                WidthRequest="18" HeightRequest="18"
+                                HorizontalOptions="End" VerticalOptions="Start">
+                            <Label x:Name="BadgeLabel" TextColor="White" FontSize="10" FontAttributes="Bold"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                    </Grid>
+                </Grid>
+
+                <!-- KARŞILAMA / MANZARA -->
+                <Border x:Name="HeroView" StrokeThickness="0" StrokeShape="RoundRectangle 20" HeightRequest="176">
+                    <Grid>
+                        <Image Source="hero_bg.png" Aspect="AspectFill" />
+                        <Border BackgroundColor="{DynamicResource HeroBox}" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                Margin="12" Padding="14,10" HorizontalOptions="Start" VerticalOptions="Center"
+                                MaximumWidthRequest="250">
+                            <VerticalStackLayout Spacing="4">
+                                <Label x:Name="GreetingLabel" FontSize="21" FontAttributes="Bold"
+                                       TextColor="{DynamicResource PrimaryDark}" />
+                                <Label x:Name="MottoLabel" FontSize="12.5" TextColor="{DynamicResource TextDark}"
+                                       Text="Bugün de kendin için güzel bir adım at. Daha sağlıklı, daha dengeli, daha üretken bir yaşam mümkün…" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <VerticalStackLayout HorizontalOptions="End" VerticalOptions="End" Margin="0,0,14,10" Spacing="0">
+                            <Label x:Name="DateLabel" TextColor="White" FontSize="17" FontAttributes="Bold"
+                                   HorizontalTextAlignment="End" />
+                            <Label x:Name="DayLabel" TextColor="White" FontSize="15" FontAttributes="Bold"
+                                   HorizontalTextAlignment="End" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- ÖZET KARTLARI -->
+                <Grid x:Name="SummaryView" ColumnDefinitions="*,*,*" ColumnSpacing="10">
+
+                    <Border Style="{StaticResource Card}" Padding="8,12">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnHealthCard" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="3">
+                            <Label Text="❤️" FontSize="26" HorizontalOptions="Center" />
+                            <Label Text="Sağlık" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" />
+                            <Label x:Name="HealthValue" Text="% 0" FontSize="20" FontAttributes="Bold"
+                                   TextColor="{StaticResource Green}" HorizontalOptions="Center" />
+                            <Label Text="Hedef: %100" Style="{StaticResource Muted}" HorizontalOptions="Center" />
+                            <ProgressBar x:Name="HealthBar" ProgressColor="{StaticResource Green}" Margin="4,4,4,0" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource Card}" Padding="8,12">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFinanceCard" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="3">
+                            <Label Text="💰" FontSize="26" HorizontalOptions="Center" />
+                            <Label Text="Finans" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" />
+                            <Label x:Name="FinanceValue" Text="₺ 0" FontSize="18" FontAttributes="Bold"
+                                   TextColor="{StaticResource Primary}" HorizontalOptions="Center"
+                                   LineBreakMode="TailTruncation" />
+                            <Label Text="Bu Ay (net)" Style="{StaticResource Muted}" HorizontalOptions="Center" />
+                            <ProgressBar x:Name="FinanceBar" ProgressColor="{StaticResource Accent}" Margin="4,4,4,0" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="2" Style="{StaticResource Card}" Padding="8,12">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnTaskCard" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="3">
+                            <Label Text="✅" FontSize="26" HorizontalOptions="Center" />
+                            <Label Text="Görev" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" />
+                            <Label x:Name="TaskValue" Text="0 / 0" FontSize="20" FontAttributes="Bold"
+                                   TextColor="{StaticResource Orange}" HorizontalOptions="Center" />
+                            <Label Text="Tamamlandı" Style="{StaticResource Muted}" HorizontalOptions="Center" />
+                            <ProgressBar x:Name="TaskBar" ProgressColor="{StaticResource Orange}" Margin="4,4,4,0" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- MODÜLLER (kodla oluşturulur: telefonda 4, tablette 6 sütun) -->
+                <Grid x:Name="ModulesGrid" ColumnSpacing="10" RowSpacing="10" />
+
+                <!-- BUGÜNÜN HATIRLATICILARI -->
+                <Border x:Name="RemindersView" Style="{StaticResource Card}" VerticalOptions="Start">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Bugünün Hatırlatıcıları" Style="{StaticResource SectionTitle}" />
+                            <Label Grid.Column="1" Text="Tümünü Gör ›" TextColor="{StaticResource Accent}"
+                                   FontAttributes="Bold" VerticalOptions="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnAllReminders" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+                        <VerticalStackLayout x:Name="RemindersList" Spacing="10" />
+                        <Label x:Name="NoReminders" Text="Bugün için hatırlatıcı yok." IsVisible="False"
+                               Style="{StaticResource Muted}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- GELİŞTİRİCİ İMZASI -->
+                <VerticalStackLayout x:Name="FooterView" Spacing="2" Margin="0,10,0,0" HorizontalOptions="Center">
+                    <Label HorizontalOptions="Center" FontSize="12" TextColor="{DynamicResource TextMuted}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="VİTANEX · " />
+                                <Span Text="TROÇKİ" FontAttributes="Bold" TextColor="{DynamicResource PrimaryDark}" />
+                                <Span Text=" tarafından geliştirildi" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label Text="Düşün • Keşfet • Üret • Paylaş" FontSize="11" HorizontalOptions="Center"
+                           TextColor="{DynamicResource TextMuted}" />
+                </VerticalStackLayout>
+
+            </Grid>
+        </ScrollView>
+
+        <!-- HIZLI EKLE -->
+        <Button Text="+" FontSize="32" Padding="0" WidthRequest="62" HeightRequest="62" CornerRadius="31"
+                BackgroundColor="{StaticResource Accent}" TextColor="White"
+                HorizontalOptions="End" VerticalOptions="End" Margin="0,0,20,20"
+                Clicked="OnFabClicked">
+            <Button.Shadow>
+                <Shadow Brush="#0B4FD6" Offset="0,4" Radius="12" Opacity="0.35" />
+            </Button.Shadow>
+        </Button>
+    </Grid>
+</ContentPage>

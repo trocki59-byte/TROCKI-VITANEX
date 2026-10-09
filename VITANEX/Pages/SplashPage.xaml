@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.SplashPage"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="*,Auto,*,Auto" Padding="24">
+        <VerticalStackLayout x:Name="LogoBlock" Grid.Row="1" Spacing="6" HorizontalOptions="Center" Opacity="0">
+            <Image Source="vitanex_leaf.png" HeightRequest="96" WidthRequest="116" HorizontalOptions="Center" />
+            <Label Text="TROÇKİ" FontSize="20" FontAttributes="Bold" CharacterSpacing="10"
+                   TextColor="{StaticResource Accent}" HorizontalOptions="Center" Margin="0,6,0,-8" />
+            <Label FontSize="44" FontAttributes="Bold" CharacterSpacing="2" HorizontalOptions="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="VİTA" TextColor="{DynamicResource PrimaryDark}" />
+                        <Span Text="NEX" TextColor="{StaticResource Accent}" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <Label Text="Hayatını Sen Yönet" FontSize="16" FontAttributes="Italic"
+                   TextColor="{DynamicResource TextMuted}" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout x:Name="SignBlock" Grid.Row="3" Spacing="2" HorizontalOptions="Center" Opacity="0" Margin="0,0,0,12">
+            <Label Text="by TROÇKİ" FontSize="18" FontAttributes="Bold" CharacterSpacing="3"
+                   TextColor="{DynamicResource PrimaryDark}" HorizontalOptions="Center" />
+            <Label Text="Düşün • Keşfet • Üret • Paylaş" FontSize="12"
+                   TextColor="{DynamicResource TextMuted}" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

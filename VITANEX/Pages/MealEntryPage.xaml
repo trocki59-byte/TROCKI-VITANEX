@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.MealEntryPage"
+             Title="Öğün">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12" MaximumWidthRequest="720">
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Öğün türü" Style="{StaticResource FieldLabel}" />
+                    <Picker x:Name="TypeField" Title="Seçin" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout>
+                            <Label Text="Tarih" Style="{StaticResource FieldLabel}" />
+                            <DatePicker x:Name="DateField" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Saat" Style="{StaticResource FieldLabel}" />
+                            <TimePicker x:Name="TimeField" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Label Text="Ne yediniz?" Style="{StaticResource FieldLabel}" />
+                    <Entry x:Name="DescField" Placeholder="örn. Menemen, peynir, zeytin, çay" />
+
+                    <Label Text="Kalori (kcal, isteğe bağlı)" Style="{StaticResource FieldLabel}" />
+                    <Entry x:Name="CalField" Keyboard="Numeric" Placeholder="örn. 450" />
+
+                    <Label Text="Not" Style="{StaticResource FieldLabel}" />
+                    <Editor x:Name="NoteField" AutoSize="TextChanges" Placeholder="Beslenme notu" />
+                </VerticalStackLayout>
+            </Border>
+            <Button Text="Kaydet" Clicked="OnSave" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

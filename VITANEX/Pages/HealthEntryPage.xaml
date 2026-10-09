@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.HealthEntryPage"
+             Title="Sağlık Kaydı">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12" MaximumWidthRequest="720">
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout>
+                            <Label Text="Tarih" Style="{StaticResource FieldLabel}" />
+                            <DatePicker x:Name="DateField" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Saat" Style="{StaticResource FieldLabel}" />
+                            <TimePicker x:Name="TimeField" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Label Text="⚖️ Kilo (kg)" Style="{StaticResource FieldLabel}" />
+                    <Entry x:Name="WeightField" Keyboard="Numeric" Placeholder="örn. 78,5" />
+
+                    <Label Text="🩺 Tansiyon (büyük / küçük)" Style="{StaticResource FieldLabel}" />
+                    <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="8">
+                        <Entry x:Name="SysField" Keyboard="Numeric" Placeholder="120" />
+                        <Label Grid.Column="1" Text="/" FontSize="20" VerticalOptions="Center" />
+                        <Entry Grid.Column="2" x:Name="DiaField" Keyboard="Numeric" Placeholder="80" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout>
+                            <Label Text="💓 Nabız (bpm)" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="PulseField" Keyboard="Numeric" Placeholder="72" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="🫁 Oksijen SpO₂ (%)" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="SpO2Field" Keyboard="Numeric" Placeholder="98" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout>
+                            <Label Text="😴 Uyku (saat)" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="SleepField" Keyboard="Numeric" Placeholder="7,5" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="🏃 Yürüyüş / Egzersiz (dk)" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="ExerciseField" Keyboard="Numeric" Placeholder="30" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Label Text="📝 Sağlık notu" Style="{StaticResource FieldLabel}" />
+                    <Editor x:Name="NoteField" AutoSize="TextChanges" Placeholder="Kendinizi nasıl hissediyorsunuz?" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Kaydet" Clicked="OnSave" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

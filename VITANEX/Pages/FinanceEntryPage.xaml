@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.FinanceEntryPage"
+             Title="Gelir / Gider">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12" MaximumWidthRequest="720">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button x:Name="IncomeBtn" Text="⬆️ Gelir" Clicked="OnIncome" />
+                <Button x:Name="ExpenseBtn" Grid.Column="1" Text="⬇️ Gider" Clicked="OnExpense" />
+            </Grid>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Açıklama" Style="{StaticResource FieldLabel}" />
+                    <Entry x:Name="DescField" Placeholder="örn. Ekim maaşı, market alışverişi" />
+
+                    <Label Text="Tutar" Style="{StaticResource FieldLabel}" />
+                    <Entry x:Name="AmountField" Keyboard="Numeric" Placeholder="örn. 1250,50" FontSize="20" FontAttributes="Bold" />
+
+                    <Label Text="Tarih" Style="{StaticResource FieldLabel}" />
+                    <DatePicker x:Name="DateField" />
+
+                    <Label Text="Kategori" Style="{StaticResource FieldLabel}" />
+                    <Picker x:Name="CategoryField" Title="Kategori seçin" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Kaydet" Clicked="OnSave" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

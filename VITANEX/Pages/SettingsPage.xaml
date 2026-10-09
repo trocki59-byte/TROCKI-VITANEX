@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.SettingsPage"
+             Title="Ayarlar">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12" MaximumWidthRequest="760">
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="👤 Kişisel" Style="{StaticResource SectionTitle}" />
+                    <Label Text="Kullanıcı adı (karşılama mesajında görünür)" Style="{StaticResource FieldLabel}" />
+                    <Entry x:Name="NameField" Placeholder="Adınız" />
+                    <Label Text="Para birimi" Style="{StaticResource FieldLabel}" />
+                    <Picker x:Name="CurrencyField" Title="Para birimi" />
+                    <Label Text="🌙 Tema" Style="{StaticResource FieldLabel}" />
+                    <Picker x:Name="ThemeField" Title="Tema" SelectedIndexChanged="OnThemeChanged" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="🎯 Günlük Hedefler" Style="{StaticResource SectionTitle}" />
+                    <Label Style="{StaticResource Muted}" Text="Sağlık skoru bu hedeflere göre hesaplanır." />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout>
+                            <Label Text="💧 Su (ml)" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="WaterField" Keyboard="Numeric" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="😴 Uyku (saat)" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="SleepField" Keyboard="Numeric" />
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout>
+                            <Label Text="🏃 Egzersiz (dk)" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="ExerciseField" Keyboard="Numeric" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="🔥 Kalori (kcal)" Style="{StaticResource FieldLabel}" />
+                            <Entry x:Name="CalorieField" Keyboard="Numeric" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Ayarları Kaydet" Clicked="OnSave" />
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="🗂️ Veri Yönetimi" Style="{StaticResource SectionTitle}" />
+                    <Button Text="⏰ Hatırlatıcıları Yönet" Style="{StaticResource SecondaryButton}" Clicked="OnReminders" />
+                    <Button Text="☁️ Yedekleme ve Geri Yükleme" Style="{StaticResource SecondaryButton}" Clicked="OnBackup" />
+                    <Button Text="Tüm Verileri Sil" Style="{StaticResource DangerButton}" Clicked="OnWipe" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="🔐 Veri Güvenliği" Style="{StaticResource SectionTitle}" />
+                    <Label FontSize="13" TextColor="{DynamicResource TextMuted}"
+                           Text="Tüm verileriniz yalnızca bu cihazda, uygulamaya özel SQLite veritabanında saklanır. İnternete veya buluta gönderilmez. Uygulama kilidi (PIN / parmak izi) sonraki sürümde eklenecek." />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="ℹ️ Uygulama Bilgisi" Style="{StaticResource SectionTitle}" />
+                    <Label x:Name="AppInfoLabel" FontSize="13" TextColor="{DynamicResource TextMuted}" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

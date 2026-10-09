@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.BackupPage"
+             Title="Yedekleme">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12" MaximumWidthRequest="760">
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="☁️ Veritabanı Yedeği" Style="{StaticResource SectionTitle}" />
+                    <Label Style="{StaticResource Muted}" FontSize="13"
+                           Text="Tüm kayıtlarınız (sağlık, finans, görevler, beslenme, modüller, hatırlatıcılar) tek bir dosyada yedeklenir. Yedeği paylaşarak Google Drive'a, e-postaya veya bilgisayarınıza gönderebilirsiniz." />
+                    <Label x:Name="DbInfo" FontSize="13" />
+                    <Button Text="Yeni Yedek Oluştur" Clicked="OnBackup" />
+                    <Button Text="Dosyadan Geri Yükle…" Style="{StaticResource SecondaryButton}" Clicked="OnRestoreFromFile" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Cihazdaki Yedekler" Style="{StaticResource SectionTitle}" />
+                    <VerticalStackLayout x:Name="BackupList" Spacing="2">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="32,*" Padding="0,8" ColumnSpacing="8">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnBackupTapped" />
+                                    </Grid.GestureRecognizers>
+                                    <Label Text="🗄️" FontSize="20" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="1">
+                                        <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" />
+                                        <Label Text="{Binding Info}" Style="{StaticResource Muted}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label x:Name="NoBackups" Text="Henüz yedek yok." Style="{StaticResource Muted}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Style="{StaticResource Muted}" HorizontalTextAlignment="Center" Margin="0,4"
+                   Text="İpucu: Telefonu değiştirmeden önce yedek oluşturup paylaşın, yeni cihazda 'Dosyadan Geri Yükle' ile açın." />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

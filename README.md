@@ -1,17 +1,61 @@
-# TROÇKİ® VİTANEX — GitHub Pages sürümü
+<p align="center">
+  <img src="docs/simge.png" width="110" alt="TROÇKİ VİTANEX simgesi" />
+</p>
 
-Lacivert/mavi iPhone arayüzü, ana sayfa, ilaç ve genel hatırlatıcılar, tamamlandı kayıtları, finans, notlar, raporlar, JSON yedekleme ve 60 bitkilik şifalı bitkiler rehberi.
+<h1 align="center">TROÇKİ VİTANEX</h1>
+<p align="center"><b>Kişisel Yaşam Yönetim Sistemi — Hayatını Sen Yönet</b><br/>
+Daha sağlıklı • Daha dengeli • Daha üretken bir yaşam</p>
 
-## GitHub Pages'e yükleme
-1. `trocki59-byte` hesabında `TROCKI-VITANEX` adlı **Public** depo oluşturun.
-2. Bu ZIP'i açın. İçindeki dosyaları (klasörü değil) deponun kök dizinine yükleyin.
-3. Repository → Settings → Pages → Build and deployment → Deploy from a branch → `main` / `(root)` → Save.
-4. Adres: `https://trocki59-byte.github.io/TROCKI-VITANEX/` (yayın tamamlandığında).
+<p align="center">
+  <img src="docs/ekran-acik.webp" width="260" alt="Açık tema" />
+  &nbsp;&nbsp;
+  <img src="docs/ekran-koyu.webp" width="260" alt="Koyu tema" />
+</p>
 
-## Sınırlar
-- Eski Vercel sürümünün verileri kendiliğinden aktarılmaz. Bu yeni, bağımsız sürümdür.
-- İlaçlar örnek gerçek reçete olarak önceden eklenmedi; kişisel reçeteye göre girilmelidir.
-- Veriler tarayıcı localStorage alanında tutulur. Özel cihazda kullanın ve düzenli JSON yedeği alın. Sunucu eşitlemesi yoktur.
-- iPhone'da uygulama kapalıyken zamanlanmış bildirim **yoktur**; yalnızca sayfa açıkken izin verilmişse uyarı verebilir.
-- Şifalı bitki içerikleri tanı/tedavi önerisi değildir. 60 giriş, bilimsel isimler ve temel riskler içerir. Her bitki için fotoğraf bulunmaz.
-- Yürüyüş ve adım sayacı bölümü kaldırılmıştır.
+Sağlık, beslenme, finans, görevler, eğitim, kişisel gelişim, sosyal yaşam ve kariyer — hepsi tek uygulamada.
+Kayıtlar grafiklere ve raporlara dönüşür; **tüm veriler yalnızca cihazınızda** saklanır.
+
+## ⬇️ İndir / Kullan
+
+| Platform | Nasıl |
+|---|---|
+| **Android** | [**⬇ TROCKI_VITANEX.apk indir**](https://github.com/trocki59-byte/TROCKI-VITANEX/releases/latest/download/TROCKI_VITANEX.apk) — ya da [Releases](https://github.com/trocki59-byte/TROCKI-VITANEX/releases/latest) sayfası |
+| **iPhone** | [**https://trocki59-byte.github.io/TROCKI-VITANEX/**](https://trocki59-byte.github.io/TROCKI-VITANEX/) adresini **Safari** ile açın → **Paylaş ⬆︎ → Ana Ekrana Ekle** |
+| **Web / Bilgisayar** | [**Tarayıcıda aç**](https://trocki59-byte.github.io/TROCKI-VITANEX/) — kurulum gerekmez |
+
+## ✨ Özellikler
+
+- ❤️ **Sağlık:** kilo, tansiyon, nabız, SpO₂, uyku, egzersiz, su takibi, ilaçlar ve ilaç hatırlatıcıları
+- 🍽️ **Beslenme:** öğünler, kalori, günlük/haftalık takip
+- 💰 **Finans:** gelir–gider, kategoriler, aylık net durum, tasarruf oranı
+- ✅ **Görevler:** öncelik, durum (Bekliyor / Devam / Tamamlandı), tarih–saat
+- 📘 Eğitim · 🌱 Kişisel Gelişim · 👥 Sosyal Yaşam · 💼 İş / Kariyer
+- 📊 **İstatistikler:** günlük / haftalık / aylık / yıllık grafikler
+- 📄 **Raporlar:** PDF olarak kaydet, paylaş, yazdır
+- ☁️ **Yedekleme** ve geri yükleme
+- 🌙 Açık / koyu tema · 📱 telefon ve tablet uyumlu
+
+## 🧩 Proje yapısı
+
+```
+VITANEX.sln              Visual Studio çözümü
+VITANEX/                 Android uygulaması (C# · .NET 10 MAUI · SQLite)
+web/                     iPhone / Web sürümü (tek HTML + PWA)
+docs/                    Ekran görüntüleri
+.github/workflows/       Otomatik APK derleme ve web yayını
+APK_OLUSTUR.bat          Bilgisayarda tek tıkla APK
+```
+
+## 🛠️ Kendin derle
+
+1. Visual Studio 2026 (.NET MAUI iş yükü ile) kurulu olsun.
+2. `VITANEX.sln` dosyasını açın, Android cihaz/emülatör seçip ▶ ile çalıştırın.
+3. APK için `APK_OLUSTUR.bat` dosyasına çift tıklayın.
+
+Her `main` güncellemesinde GitHub Actions APK'yı otomatik derler (**Actions → Android APK → Artifacts**).
+`v1.0` gibi bir etiket atıldığında APK **Releases** sayfasında yayımlanır.
+
+---
+
+<p align="center"><b>TROÇKİ</b> tarafından geliştirildi · <a href="https://trocki22.com.tr">trocki22.com.tr</a><br/>
+<i>Düşün • Keşfet • Üret • Paylaş</i></p>

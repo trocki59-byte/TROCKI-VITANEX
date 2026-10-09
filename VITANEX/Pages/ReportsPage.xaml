@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.ReportsPage"
+             Title="Raporlar">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12" MaximumWidthRequest="860">
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="📄 Rapor Oluştur" Style="{StaticResource SectionTitle}" />
+                    <Label Text="Rapor türü" Style="{StaticResource FieldLabel}" />
+                    <Picker x:Name="TypeField" Title="Rapor türü" />
+
+                    <Label Text="Hızlı dönem" Style="{StaticResource FieldLabel}" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="8">
+                            <Button Text="Bu hafta" ClassId="week" Style="{StaticResource ChipButton}" Clicked="OnQuickRange" />
+                            <Button Text="Bu ay" ClassId="month" Style="{StaticResource ChipButton}" Clicked="OnQuickRange" />
+                            <Button Text="Geçen ay" ClassId="lastmonth" Style="{StaticResource ChipButton}" Clicked="OnQuickRange" />
+                            <Button Text="Son 3 ay" ClassId="3m" Style="{StaticResource ChipButton}" Clicked="OnQuickRange" />
+                            <Button Text="Bu yıl" ClassId="year" Style="{StaticResource ChipButton}" Clicked="OnQuickRange" />
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout>
+                            <Label Text="Başlangıç" Style="{StaticResource FieldLabel}" />
+                            <DatePicker x:Name="StartField" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Bitiş" Style="{StaticResource FieldLabel}" />
+                            <DatePicker x:Name="EndField" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,10,0,0">
+                        <Button Text="Önizle" Style="{StaticResource SecondaryButton}" Clicked="OnPreview" />
+                        <Button Grid.Column="1" Text="PDF Kaydet / Paylaş" Clicked="OnPdf" />
+                    </Grid>
+                    <ActivityIndicator x:Name="Busy" IsRunning="False" IsVisible="False" Color="{StaticResource Primary}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border x:Name="PreviewCard" Style="{StaticResource Card}" IsVisible="False">
+                <VerticalStackLayout Spacing="6">
+                    <Label x:Name="PreviewTitle" Style="{StaticResource SectionTitle}" />
+                    <Label x:Name="PreviewSub" Style="{StaticResource Muted}" />
+                    <BoxView HeightRequest="1" Color="{DynamicResource Line}" Margin="0,4" />
+                    <Label x:Name="PreviewBody" FontSize="14" LineHeight="1.25" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Kaydedilmiş Raporlar" Style="{StaticResource SectionTitle}" />
+                    <VerticalStackLayout x:Name="SavedList" Spacing="2">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="32,*" Padding="0,8" ColumnSpacing="8">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnSavedTapped" />
+                                    </Grid.GestureRecognizers>
+                                    <Label Text="📄" FontSize="20" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="1">
+                                        <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" LineBreakMode="MiddleTruncation" />
+                                        <Label Text="{Binding Info}" Style="{StaticResource Muted}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label x:Name="NoSaved" Text="Henüz PDF rapor oluşturulmadı." Style="{StaticResource Muted}" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

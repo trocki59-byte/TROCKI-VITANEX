@@ -1,0 +1,22 @@
+# Visual Studio / .NET
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+*.cache
+*.log
+
+# Derleme çıktıları (APK'lar GitHub Releases'te yayımlanır)
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Sistem
+Thumbs.db
+.DS_Store
+
+# Yardımcı dosya
+github_actions.zip

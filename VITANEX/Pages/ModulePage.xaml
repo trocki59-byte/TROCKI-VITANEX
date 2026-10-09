@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.ModulePage">
+
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16,16,16,90" Spacing="12" MaximumWidthRequest="960">
+
+                <Border Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="56,*" ColumnSpacing="12">
+                        <Label x:Name="IconLabel" FontSize="40" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                            <Label x:Name="DescLabel" FontSize="13" TextColor="{DynamicResource TextMuted}" />
+                            <Label x:Name="StatsLabel" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource PrimaryDark}" />
+                            <ProgressBar x:Name="AvgBar" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout x:Name="Chips" Spacing="8" />
+                </ScrollView>
+
+                <VerticalStackLayout x:Name="EntryList" Spacing="10">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Card}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnEntryTapped" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="6">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="{Binding Kind}" FontSize="12" FontAttributes="Bold"
+                                               TextColor="{StaticResource Accent}" />
+                                        <Label Grid.Column="1" Text="{Binding StatusText}" TextColor="{Binding StatusColor}"
+                                               FontSize="12" FontAttributes="Bold" />
+                                    </Grid>
+                                    <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" />
+                                    <Label Text="{Binding DateText}" IsVisible="{Binding HasDate}" Style="{StaticResource Muted}" />
+                                    <Label Text="{Binding Note}" IsVisible="{Binding HasNote}" FontSize="13" TextColor="{DynamicResource TextMuted}" />
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                        <ProgressBar Progress="{Binding ProgressValue}" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding ProgressText}" FontAttributes="Bold" FontSize="13" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+                <Label x:Name="EmptyLabel" Style="{StaticResource Muted}" HorizontalOptions="Center" Margin="0,20" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Button Text="+" FontSize="32" Padding="0" WidthRequest="62" HeightRequest="62" CornerRadius="31"
+                BackgroundColor="{StaticResource Accent}" HorizontalOptions="End" VerticalOptions="End"
+                Margin="0,0,20,20" Clicked="OnAdd" />
+    </Grid>
+</ContentPage>

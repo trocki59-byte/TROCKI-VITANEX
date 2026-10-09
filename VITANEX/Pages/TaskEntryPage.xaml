@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VITANEX.Pages.TaskEntryPage"
+             Title="Görev">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12" MaximumWidthRequest="720">
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Görev başlığı" Style="{StaticResource FieldLabel}" />
+                    <Entry x:Name="TitleField" Placeholder="örn. Faturayı öde" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout>
+                            <Label Text="Tarih" Style="{StaticResource FieldLabel}" />
+                            <DatePicker x:Name="DateField" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Saat" Style="{StaticResource FieldLabel}" />
+                                <Switch Grid.Column="1" x:Name="TimeSwitch" Toggled="OnTimeToggled" OnColor="{StaticResource Accent}" />
+                            </Grid>
+                            <TimePicker x:Name="TimeField" IsEnabled="False" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout>
+                            <Label Text="Öncelik" Style="{StaticResource FieldLabel}" />
+                            <Picker x:Name="PriorityField" Title="Öncelik" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Durum" Style="{StaticResource FieldLabel}" />
+                            <Picker x:Name="StatusField" Title="Durum" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Label Text="Not" Style="{StaticResource FieldLabel}" />
+                    <Editor x:Name="NoteField" AutoSize="TextChanges" Placeholder="Ayrıntılar" />
+                </VerticalStackLayout>
+            </Border>
+            <Button Text="Kaydet" Clicked="OnSave" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
