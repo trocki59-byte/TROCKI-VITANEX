@@ -1,5 +1,5 @@
 // TROÇKİ VİTANEX — çevrimdışı çalışma için önbellek
-const CACHE = 'trocki-vitanex-v10';
+const CACHE = 'trocki-vitanex-v11';
 const IMGCACHE = 'trocki-vitanex-img';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
@@ -26,8 +26,10 @@ self.addEventListener('fetch', e => {
     e.respondWith(caches.open(IMGCACHE).then(c => c.match(e.request).then(hit => hit || fetch(e.request).then(r => { c.put(e.request, r.clone()); return r; }))));
     return;
   }
+  // Kendi dosyalarımız için tarayıcı önbelleğini atla (yeni sürüm hemen gelsin)
+  const same = new URL(e.request.url).origin === self.location.origin;
   e.respondWith(
-    fetch(e.request).then(r => {
+    fetch(e.request, same ? { cache: 'no-cache' } : undefined).then(r => {
       const copy = r.clone();
       caches.open(CACHE).then(c => c.put(e.request, copy));
       return r;
