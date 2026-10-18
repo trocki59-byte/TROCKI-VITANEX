@@ -449,7 +449,8 @@ pages.health=()=>{
   </div><div>
   <div class="card"><span class="st">Büyük Tansiyon (son 30 kayıt)</span>${lineChart(l30.filter(r=>r.sys).map(r=>r.date.toLocaleDateString(TR,{day:'2-digit',month:'2-digit'})),l30.filter(r=>r.sys).map(r=>r.sys),'#F0384B')}</div>
   <div class="card"><div class="row"><span class="st">💊 İlaçlarım</span><span class="sp"></span><button class="btn2" onclick="addMed()">+ İlaç</button></div>
-   ${S.meds.map(m=>`<div class="li" onclick="medTap(${m.id})"><div style="flex:1"><div class="t">${esc(m.name)}</div><div class="mu">${esc(m.dose)} · ${esc(m.times)}</div></div><b style="color:${m.active?'var(--g)':'#8A97B2'}">${m.active?'Aktif':'Pasif'}</b></div>`).join('')||'<p class="mu" style="margin-top:8px">Henüz ilaç eklenmedi.</p>'}</div>
+   ${S.meds.map(m=>`<div class="li" onclick="medTap(${m.id})"><div style="flex:1"><div class="t">${esc(m.name)}</div><div class="mu">${esc(m.dose)} · ${esc(m.times)}</div></div><b style="color:${m.active?'var(--g)':'#8A97B2'}">${m.active?'Aktif':'Pasif'}</b></div>`).join('')||'<p class="mu" style="margin-top:8px">Henüz ilaç eklenmedi.</p>'}
+   ${S.meds.some(m=>m.active)?`<button class="btn2" style="width:100%;margin-top:10px" onclick="medCal()">🔔 İlaç saatlerini iPhone Takvimine ekle</button><p class="mu" style="margin-top:6px;line-height:1.45">Takvime eklenince her gün ilaç saatinde telefonunuza bildirim gelir: "💊 Tansiyon ilacı — 1 tablet".</p>`:''}</div>
   <div class="card"><span class="st">Kayıt Geçmişi</span>
    ${all.slice(0,12).map(r=>`<div class="li" onclick="healthTap(${r.id})"><div><div style="color:var(--p);font-weight:700;font-size:13px">${r.date.toLocaleDateString(TR)} ${hm(r.date)}</div><div style="font-size:14px">${[r.w&&num(r.w)+' kg',r.sys&&`Tansiyon ${r.sys}/${r.dia}`,r.pulse&&'Nabız '+r.pulse,r.spo2&&'SpO₂ %'+r.spo2,r.sleep&&'Uyku '+num(r.sleep)+' sa',r.ex&&'Egzersiz '+r.ex+' dk'].filter(Boolean).join(' · ')}</div>${r.note?`<div class="mu">${esc(r.note)}</div>`:''}</div></div>`).join('')}</div>
   </div></div>`};
@@ -892,6 +893,15 @@ function menuCard(day){const tot=MTYPES.reduce((a,[t])=>a+menuItem(day,t).cal,0)
   <button class="btn2" style="width:100%;margin-top:6px" onclick="go('menuplan')">📅 Aylık Planı Gör</button>
   <button class="btn2" style="width:100%;margin-top:8px" onclick="mealCal()">🔔 Öğün saatlerini iPhone Takvimine ekle</button>
   <p class="mu" style="margin-top:6px;line-height:1.45">Takvime eklenince her gün 08:00 · 10:30 · 12:30 · 16:00 · 19:00'da telefonunuza bildirim gelir; dokununca VİTANEX'ten o günün menüsüne bakarsınız.</p></div>`}
+// İlaç saatleri → iPhone Takvimi (her gün, saatinde bildirimli)
+window.medCal=()=>{const T=today(),now=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');const ev=[];
+  S.meds.filter(m=>m.active).forEach(m=>String(m.times||'').split(/[,;\s]+/).map(t=>t.replace('.',':')).filter(t=>/^\d{1,2}:\d{2}$/.test(t)).forEach(t=>{
+    const[hh,mm]=t.split(':').map(Number),start=new Date(T.getFullYear(),T.getMonth(),T.getDate(),hh,mm);if(start<new Date())start.setDate(start.getDate()+1);
+    const ts=String(hh).padStart(2,'0')+String(mm).padStart(2,'0')+'00',txt=`💊 ${m.name}${m.dose?' — '+m.dose:''}`;
+    ev.push(['BEGIN:VEVENT','UID:vitanex-med-'+m.id+'-'+ts+'@trocki','DTSTAMP:'+now,'DTSTART:'+icsD(start)+'T'+ts,'DURATION:PT10M','RRULE:FREQ=DAILY',
+      'SUMMARY:'+icsEsc(txt),'DESCRIPTION:'+icsEsc('İlaç zamanı · TROÇKİ VİTANEX'),'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc('İlaç zamanı: '+txt),'TRIGGER:PT0M','END:VALARM','END:VEVENT'].join('\r\n'))}));
+  if(!ev.length){toast('İlaç saatlerini 08:00 gibi yazın');return}
+  openICS(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TROCKI//VITANEX//TR','CALSCALE:GREGORIAN','METHOD:PUBLISH',...ev,'END:VCALENDAR'].join('\r\n'),'VITANEX_ilaclar.ics')};
 // Öğün saatleri → iPhone Takvimi (her gün tekrar eden, saatinde bildirimli)
 window.mealCal=()=>{const T=addD(today(),1),now=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
   const times={'Kahvaltı':'080000','Ara Öğün':'103000','Öğle Yemeği':'123000','İkindi':'160000','Akşam Yemeği':'190000'};

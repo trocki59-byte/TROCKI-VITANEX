@@ -148,11 +148,16 @@ public partial class HealthPage : ContentPage
         await Db.Save(m);
 
         if (isNew && !string.IsNullOrEmpty(m.Times) &&
-            await Ui.Confirm("Hatırlatıcı", "Bu ilaç için her gün hatırlatıcı oluşturulsun mu?"))
+            await Ui.Confirm("Hatırlatıcı", "Bu ilaç için her gün hatırlatıcı oluşturulsun mu? (Ana sayfada listelenir.)"))
         {
             foreach (var t in m.Times.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 await Db.Save(new Reminder { Time = t, Icon = "💊", Title = $"{m.Name} ({m.Dose})" });
         }
+
+        // Telefon bildirimi: ilaç saatlerinde "💊 İlaç zamanı"
+        if (isNew && !await Payments.RequestPermission())
+            await DisplayAlertAsync("Bildirim izni", "İlaç saatlerinde bildirim gelmesi için bildirim iznine izin verin:\nAyarlar → Uygulamalar → TROÇKİ VİTANEX → Bildirimler.", "Tamam");
+        await Payments.Reschedule();
         await LoadAsync();
     }
 
@@ -178,12 +183,14 @@ public partial class HealthPage : ContentPage
             case "Aktif yap":
                 m.Active = !m.Active;
                 await Db.Save(m);
+                await Payments.Reschedule();
                 await LoadAsync();
                 break;
             case "Sil":
                 if (await Ui.Confirm("Sil", $"{m.Name} silinsin mi?"))
                 {
                     await Db.Delete(m);
+                    await Payments.Reschedule();
                     await LoadAsync();
                 }
                 break;

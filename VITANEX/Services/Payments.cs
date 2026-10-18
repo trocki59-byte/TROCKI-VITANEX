@@ -129,6 +129,7 @@ public static class Payments
                 }
             }
             list.AddRange(MealPlan.Alarms());
+            list.AddRange(await Medications.Alarms());
 #if ANDROID
             VITANEX.Droid.PaymentNotifier.Schedule(list);
 #endif
