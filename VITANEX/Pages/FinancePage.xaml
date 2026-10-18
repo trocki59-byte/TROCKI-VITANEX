@@ -39,6 +39,18 @@
                         </VerticalStackLayout>
                     </Border>
 
+                    <!-- DÜZENLİ ÖDEMELER -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="📅 Düzenli Ödemeler" Style="{StaticResource SectionTitle}" VerticalOptions="Center" />
+                                <Button Grid.Column="1" Text="+ Ekle" Style="{StaticResource SecondaryButton}" Clicked="OnAddPayment" />
+                            </Grid>
+                            <Label x:Name="PaysTotal" Style="{StaticResource Muted}" />
+                            <VerticalStackLayout x:Name="PaysList" />
+                        </VerticalStackLayout>
+                    </Border>
+
                     <!-- 6 AYLIK GRAFİK -->
                     <Border Style="{StaticResource Card}">
                         <VerticalStackLayout Spacing="8">

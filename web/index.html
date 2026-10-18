@@ -95,6 +95,11 @@ input,textarea,select{-webkit-user-select:text;user-select:text;font-size:16px!i
 .mod.wide small{font-size:11.5px;opacity:.9}
 .tablet .mod.wide{grid-column:span 3}
 .mod.st2{background:linear-gradient(135deg,#0B4FD6,#1E88FF)}
+.pocket{position:absolute;inset:0;z-index:60;background:#000;color:#8FB8FF;display:flex;align-items:center;justify-content:center;text-align:center;touch-action:none;-webkit-user-select:none;user-select:none}
+.pk-t{font-size:13px;letter-spacing:4px;font-weight:700;opacity:.6}.pk-n{font-size:72px;font-weight:800;color:#5E8FE0;line-height:1.1;margin-top:10px}
+.pk-s{font-size:15px;opacity:.6;margin-top:2px}.pk-h{font-size:13px;opacity:.45;margin:40px 24px 30px;line-height:1.5}
+.pk-u{position:relative;overflow:hidden;margin:0 auto;width:250px;border:1px solid #2A3854;border-radius:30px;padding:16px;font-size:14px;color:#8FB8FF}
+.pk-u i{position:absolute;left:0;top:0;bottom:0;width:0;background:#1E2D4D}.pk-u.hold i{width:100%;transition:width 2s linear}.pk-u span{position:relative}
 .ped-pill{position:absolute;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:30;background:#22B573;color:#fff;font-weight:700;font-size:13px;padding:6px 14px;border-radius:20px;box-shadow:0 4px 12px #0004;cursor:pointer}
 .home-grid{display:block}
 .tablet .home-grid{display:grid;grid-template-columns:3fr 2fr;gap:16px;align-items:start}
@@ -169,13 +174,15 @@ let uid=1;
 let S;
 function seed(){
   const T=today(),rnd=(a,b)=>a+Math.random()*(b-a);
-  S={user:'Troçki',goals:{water:2000,sleep:8,ex:30,cal:2000,steps:8000,stride:72},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[],fav:[],steps:[]};
+  S={user:'Troçki',goals:{water:2000,sleep:8,ex:30,cal:2000,steps:8000,stride:72},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[],fav:[],steps:[],pays:[],notified:{}};
   for(let i=45;i>=1;i--){const d=addD(T,-i);
     S.health.push({id:uid++,date:new Date(d.getTime()+8*36e5),w:+(76.4+i*0.05+rnd(-.3,.3)).toFixed(1),sys:Math.round(rnd(118,134)),dia:Math.round(rnd(74,86)),pulse:Math.round(rnd(64,80)),spo2:Math.round(rnd(96,99)),sleep:+rnd(6,8.5).toFixed(1),ex:Math.round(rnd(10,50)),note:''});
     S.water.push({date:new Date(d.getTime()+12*36e5),ml:Math.round(rnd(1200,2300)/100)*100});}
   S.health.push({id:uid++,date:new Date(T.getTime()+7.5*36e5),w:76.4,sys:124,dia:80,pulse:70,spo2:98,sleep:7.5,ex:30,note:'Sabah yürüyüşü yapıldı'});
   S.water.push({date:new Date(T.getTime()+9*36e5),ml:600},{date:new Date(T.getTime()+11*36e5),ml:400});
   for(let i=20;i>=0;i--)S.steps.push({date:addD(T,-i),n:i?Math.round(rnd(4200,11500)):3450});
+  [['Kredi Taksiti','Konut kredisi',8750,15,84],['Kredi Kartı','Kredi kartı ödemesi',4500,T.getDate()+1>28?28:T.getDate()+1,null],['KMH (Ek Hesap)','KMH faizi',650,5,null],['Aidat','Site aidatı',1200,10,null]]
+   .forEach(([t,n,a,d,l])=>{const p={id:uid++,type:t,name:n,amt:a,day:d,left:l,active:true,paid:[],since:addM(T,-3).toISOString()};const dd=dueIn(p,addM(T,0));if(dd<T)p.paid.push(mKey(dd));p.paid.push(mKey(dueIn(p,addM(T,-1))));S.pays.push(p)});
   S.meds.push({id:uid++,name:'Tansiyon ilacı',dose:'1 tablet',times:'08:00',active:true});
   S.meals.push({id:uid++,date:new Date(T.getTime()+8*36e5),type:'Kahvaltı',desc:'Menemen, peynir, zeytin, çay',cal:520},{id:uid++,date:new Date(T.getTime()+12.5*36e5),type:'Öğle Yemeği',desc:'Mercimek çorbası, salata',cal:450});
   for(let i=1;i<7;i++)S.meals.push({id:uid++,date:addD(T,-i),type:'Akşam Yemeği',desc:'Akşam yemeği',cal:Math.round(rnd(1500,2300))});
@@ -260,7 +267,7 @@ const MODINFO={education:['Eğitim','📘','Kitaplar, kurslar, araştırmalar ve
  development:['Kişisel Gelişim','🌱','Alışkanlıklar, günlük hedefler, motivasyon notları ve kişisel projeler.',['Alışkanlık','Günlük Hedef','Motivasyon Notu','Kişisel Proje']],
  social:['Sosyal Yaşam','👥','Görüşmeler, etkinlikler, seyahatler ve sosyal planlar.',['Görüşme','Etkinlik','Seyahat','Sosyal Plan']],
  career:['İş / Kariyer','💼','Projeler, yapılacak işler, fikirler ve kariyer hedefleri.',['Proje','Yapılacak İş','Fikir','Kariyer Hedefi']]};
-const EXP=['Market','Faturalar','Kira','Ulaşım','Sağlık','Eğitim','Giyim','Yemek','Eğlence','Ev / Bakım','Diğer'],INC=['Maaş','Emekli Maaşı','Ek Gelir','Kira Geliri','Satış','Faiz / Yatırım','Diğer'];
+const EXP=['Market','Kredi Taksiti','Kredi Kartı','KMH (Ek Hesap)','Kira','Aidat','Faturalar','Ulaşım','Sağlık','Eğitim','Giyim','Yemek','Eğlence','Ev / Bakım','Diğer'],INC=['Maaş','Emekli Maaşı','Ek Gelir','Kira Geliri','Satış','Faiz / Yatırım','Diğer'];
 const STN=['Bekliyor','Devam Ediyor','Tamamlandı'],STC=['var(--o)','var(--a)','var(--g)'],PRN=['Düşük','Orta','Yüksek'],PRC=['#8A97B2','var(--o)','var(--r)'];
 const MEALS=['Kahvaltı','Öğle Yemeği','Akşam Yemeği','Ara Öğün'],MICON={'Kahvaltı':'🍳','Öğle Yemeği':'🥗','Akşam Yemeği':'🍲','Ara Öğün':'🍎'};
 
@@ -338,7 +345,7 @@ const pPic=(i,css)=>`<img src="${pImg(i)}" alt="${esc(PLANTS[i][0])}" loading="l
 window.pFail=(el,i)=>{const s=document.createElement('span');s.style.cssText=el.style.cssText+';display:grid;place-items:center;font-size:30px;background:var(--pl)';s.textContent=PLANTS[i][2];el.replaceWith(s)};
 // ───────── yönlendirme ─────────
 let stack=[{p:'home'}],tab='home',st={};
-const TITLES={health:'Sağlık',nutrition:'Beslenme',finance:'Finans',backup:'Yedekleme',settings:'Ayarlar',reminders:'Hatırlatıcılar',stats:'İstatistikler',tasks:'Görevler',reports:'Raporlar',plants:'Şifalı Bitkiler',steps:'Yürüme Sayar'};
+const TITLES={health:'Sağlık',nutrition:'Beslenme',finance:'Finans',backup:'Yedekleme',settings:'Ayarlar',reminders:'Hatırlatıcılar',stats:'İstatistikler',tasks:'Görevler',reports:'Raporlar',plants:'Şifalı Bitkiler',steps:'Yürüme Sayar',menuplan:'Aylık Menü'};
 function go(p,a={}){
   if(['home','stats','tasks','reports'].includes(p)){tab=p;stack=[{p}]}
   else if(MODINFO[p])stack.push({p:'module',key:p});
@@ -380,7 +387,7 @@ pages.home=()=>{
   const inc=fin.filter(f=>f.inc).reduce((a,f)=>a+f.amt,0),exp=fin.filter(f=>!f.inc).reduce((a,f)=>a+f.amt,0),net=inc-exp;
   const tt=S.tasks.filter(t=>sameDay(t.date,T)),done=tt.filter(t=>t.status===2).length;
   const rems=S.rem.filter(r=>r.active).sort((a,b)=>a.time.localeCompare(b.time));
-  const nowS=hm(now),pend=rems.filter(r=>r.done!==T.toDateString()&&r.time<=nowS).length;
+  const nowS=hm(now),pend=rems.filter(r=>r.done!==T.toDateString()&&r.time<=nowS).length+payDue().length;
   return`
   <div class="hdr"><button style="background:none;color:var(--pd)" onclick="menu()">${ICON.menu}</button>
     <div><div style="text-align:center;font-size:11px;font-weight:700;letter-spacing:6px;color:var(--a);margin-bottom:-4px">TROÇKİ</div><div class="logo">${LEAF}<b>VİTA<span>NEX</span></b></div><div class="tag">DAHA SAĞLIKLI • DAHA DENGELİ • DAHA ÜRETKEN BİR YAŞAM</div></div>
@@ -397,6 +404,7 @@ pages.home=()=>{
   </div><div>
   <div class="card" style="cursor:pointer" onclick="go('steps')"><div class="row"><span class="st">👣 Bugün</span><span class="sp"></span><b style="color:var(--p);font-size:18px">${stepsOn(T).toLocaleString(TR)}</b><span class="mu">/ ${(S.goals.steps||8000).toLocaleString(TR)} adım</span></div><div class="bar" style="margin-top:8px"><i style="width:${Math.min(100,stepsOn(T)/(S.goals.steps||8000)*100)}%;background:var(--a)"></i></div><div class="mu" style="margin-top:6px">${num(stepKm(stepsOn(T)),2)} km · ${stepKcal(stepsOn(T))} kcal${PED.on?' · <b style="color:var(--g)">canlı sayılıyor</b>':''}</div></div>
   <div class="card"><div class="row"><span class="st">Bugünün Hatırlatıcıları</span><span class="sp"></span><a style="color:var(--a);font-weight:700;cursor:pointer;font-size:14px" onclick="go('reminders')">Tümünü Gör ›</a></div>
+   ${payDue().map(p=>{const n=payDays(p);return`<div class="rem" style="cursor:pointer;background:${n<=0?'#F0384B18':'#FF8A1F18'};border-radius:10px;padding:6px 4px;margin-top:6px" onclick="go('finance')"><span style="font-size:18px;text-align:center">${payIcon(p.type)}</span><span style="font-weight:700;color:${n<=0?'var(--r)':'var(--o)'}">${n<0?'Gecikti':n===0?'Bugün':'Yarın'}</span><span></span><span><b>${esc(p.name)}</b> · ${money(p.amt,0)}</span></div>`}).join('')}
    <div style="margin-top:8px">${rems.length?rems.map(r=>{const d=r.done===T.toDateString();return`<div class="rem"><button class="chk ${d?'on':''}" onclick="togRem(${r.id})">${d?'✓':''}</button><span>${r.time}</span><span>${r.icon}</span><span class="${d?'done':''}">${esc(r.title)}</span></div>`}).join(''):'<p class="mu">Bugün için hatırlatıcı yok.</p>'}</div></div>
   </div></div>
   <div style="text-align:center;margin-top:6px;font-size:12px;color:var(--mu)">VİTANEX · <b style="color:var(--pd)">TROÇKİ</b> tarafından geliştirildi<div style="font-size:11px;margin-top:2px">Düşün • Keşfet • Üret • Paylaş</div></div>`};
@@ -404,7 +412,9 @@ pages.home.fab=()=>sheet('Hızlı Ekle',[['❤️ Sağlık Kaydı',addHealth],['
 window.togRem=id=>{const r=S.rem.find(x=>x.id===id),T=today().toDateString();r.done=r.done===T?null:T;render()};
 window.menu=()=>sheet('TROÇKİ VİTANEX',[['👣 Yürüme Sayar',()=>go('steps')],['🌿 Şifalı Bitkiler',()=>go('plants')],['Hatırlatıcılar',()=>go('reminders')],['Beslenme',()=>go('nutrition')],['Eğitim',()=>go('education')],['Kişisel Gelişim',()=>go('development')],['Sosyal Yaşam',()=>go('social')],['İş / Kariyer',()=>go('career')],['Yedekleme',()=>go('backup')],['Ayarlar',()=>go('settings')],[dark?'☀️ Açık tema':'🌙 Koyu tema',()=>setDark(!dark)]]);
 window.bell=()=>{const T=today().toDateString(),n=hm(new Date());const p=S.rem.filter(r=>r.active&&r.done!==T).sort((a,b)=>a.time.localeCompare(b.time));
-  sheet('Bildirimler',p.length?p.map(r=>[`${r.time}  ${r.icon} ${r.title}${r.time<=n?'  (zamanı geldi)':''}`,()=>togRem(r.id)]):[['Bekleyen hatırlatıcı yok 👍',()=>{}]])};
+  const pd=payDue().map(x=>{const k=payDays(x);return[`${payIcon(x.type)} ${k<0?'GECİKTİ':k===0?'BUGÜN':'Yarın'}: ${x.name} — ${money(x.amt,0)}`,()=>go('finance')]});
+  const all=[...pd,...p.map(r=>[`${r.time}  ${r.icon} ${r.title}${r.time<=n?'  (zamanı geldi)':''}`,()=>togRem(r.id)])];
+  sheet('Bildirimler',all.length?all:[['Bekleyen hatırlatıcı yok 👍',()=>{}]])};
 
 // SAĞLIK
 pages.health=()=>{
@@ -452,12 +462,13 @@ pages.nutrition=()=>{
    <p style="margin-top:10px;font-weight:700">🔥 Kalori: ${cal.toLocaleString(TR)} / ${S.goals.cal.toLocaleString(TR)} kcal</p><div class="bar"><i style="width:${Math.min(100,cal/S.goals.cal*100)}%;background:var(--g)"></i></div>
    <p style="margin-top:10px">💧 Su: ${ml} / ${S.goals.water} ml</p><div class="bar"><i style="width:${Math.min(100,ml/S.goals.water*100)}%;background:var(--a)"></i></div>
    <div class="g2" style="margin-top:10px"><button class="btn2" onclick="water(200)">💧 +200 ml</button><button class="btn2" onclick="water(500)">💧 +500 ml</button></div></div>
+  ${menuCard(day)}
   <div class="card"><div class="row"><span class="st">🍽️ Öğünler</span><span class="sp"></span><button class="btn2" onclick="addMeal()">+ Öğün</button></div>
    ${meals.map(m=>`<div class="li" onclick="mealTap(${m.id})"><span class="e">${MICON[m.type]||'🍎'}</span><div style="flex:1"><div style="color:var(--p);font-weight:700;font-size:13px">${m.type}</div><div>${esc(m.desc)}</div></div><div style="text-align:right"><b>${m.cal?m.cal+' kcal':''}</b><div class="mu">${hm(m.date)}</div></div></div>`).join('')||'<p class="mu" style="margin-top:8px">Bu gün için öğün kaydı yok.</p>'}</div>
   </div><div>
   <div class="card"><span class="st">Son 7 Gün — Kalori</span>${barChart(days.map(d=>d.toLocaleDateString(TR,{weekday:'short'})),[{v:days.map(d=>S.meals.filter(m=>sameDay(m.date,d)).reduce((a,m)=>a+(m.cal||0),0)),c:'#22B573'}])}</div>
   </div></div>`};
-window.nday=n=>{const d=addD(st.nday||today(),n);if(d<=today()){st.nday=d;render()}};
+window.nday=n=>{const d=addD(st.nday||today(),n);if(d<=addD(today(),30)){st.nday=d;render()}};
 window.addMeal=(m)=>{const now=new Date(),h=now.getHours();const def=h<11?MEALS[0]:h<16?MEALS[1]:h<21?MEALS[2]:MEALS[3];
   form(m?'Öğünü Düzenle':'Yeni Öğün',[{k:'type',l:'Öğün türü',t:'select',o:MEALS},{k:'d',l:'Tarih',t:'date'},{k:'t',l:'Saat',t:'time'},{k:'desc',l:'Ne yediniz?',ph:'örn. Menemen, peynir, zeytin, çay'},{k:'cal',l:'Kalori (kcal, isteğe bağlı)',t:'num',ph:'450'},{k:'note',l:'Not',t:'textarea'}],
    m?{type:m.type,d:dIn(m.date),t:tIn(m.date),desc:m.desc,cal:m.cal??'',note:m.note||''}:{type:def,d:dIn(st.nday||now),t:tIn(now)},
@@ -474,6 +485,7 @@ pages.finance=()=>{
   <div class="card"><div class="row"><button class="btn2" onclick="fmon(-1)">‹</button><span class="sp st" style="text-align:center">${M.toLocaleDateString(TR,{month:'long',year:'numeric'})}</span><button class="btn2" onclick="fmon(1)">›</button></div>
    <div class="g3" style="margin-top:12px;text-align:center"><div><div class="mu">Gelir</div><b style="color:var(--g)">${money(inc)}</b></div><div><div class="mu">Gider</div><b style="color:var(--r)">${money(exp)}</b></div><div><div class="mu">Net Durum</div><b style="color:${inc-exp<0?'var(--r)':'var(--p)'}">${money(inc-exp)}</b></div></div>
    <p class="mu" style="text-align:center;margin-top:8px;font-size:13px">${inc?`Tasarruf oranı: %${Math.round((inc-exp)/inc*100)}`:'Bu ay gelir kaydı yok'}</p></div>
+  ${paysCard()}
   <div class="card"><span class="st">Son 6 Ay — Gelir / Gider</span>${barChart(ms.map(m=>m.toLocaleDateString(TR,{month:'short'})),[{v:ms.map(m=>S.fin.filter(f=>f.inc&&inR(f.date,m,addM(m,1))).reduce((a,f)=>a+f.amt,0)),c:'#22B573',fmt:money},{v:ms.map(m=>S.fin.filter(f=>!f.inc&&inR(f.date,m,addM(m,1))).reduce((a,f)=>a+f.amt,0)),c:'#F0384B',fmt:money}],200)}
    <p style="text-align:center;font-size:13px"><span style="color:var(--g)">■ Gelir</span> &nbsp; <span style="color:var(--r)">■ Gider</span></p></div>
   <div class="card"><span class="st">Gider Kategorileri</span>${cl.map(([c,a])=>`<div style="margin-top:10px"><div class="row" style="font-size:14px"><span>${c}</span><span class="sp"></span><b style="font-size:13px">${money(a)} (%${Math.round(a/exp*100)})</b></div><div class="bar"><i style="width:${a/exp*100}%;background:var(--r)"></i></div></div>`).join('')||'<p class="mu">Bu ay gider yok.</p>'}</div>
@@ -569,7 +581,7 @@ window.buildRep=()=>{const r=st.rep||{type:0,range:'month'},T=today(),M=addM(T,0
     sec('Sağlık',[['Kayıt sayısı',h.length],['Kilo (ilk → son)',w.length?`${num(w[0].w)} → ${num(w[w.length-1].w)} kg`:'—'],['Ortalama tansiyon',`${av(h.filter(x=>x.sys).map(x=>x.sys))}/${av(h.filter(x=>x.dia).map(x=>x.dia))}`],['Ortalama nabız',av(h.filter(x=>x.pulse).map(x=>x.pulse))],['Ortalama uyku',av(h.filter(x=>x.sleep).map(x=>x.sleep))+' saat'],['Toplam egzersiz',h.reduce((a,x)=>a+(x.ex||0),0)+' dk'],['Toplam su',num(S.water.filter(x=>inR(x.date,s,e)).reduce((a,x)=>a+x.ml,0)/1000)+' litre'],['Ortalama sağlık skoru','%'+(periodScore(s,e)??'—')]])}
   if(all||r.type===1){const st2=S.steps.filter(x=>inR(x.date,s,e)&&x.n>0),tot=st2.reduce((a,x)=>a+x.n,0);sec('Yürüyüş',[['Toplam adım',tot.toLocaleString(TR)],['Günlük ortalama',st2.length?Math.round(tot/st2.length).toLocaleString(TR):'—'],['Mesafe',num(stepKm(tot),1)+' km'],['Hedefe ulaşılan gün',st2.filter(x=>x.n>=(S.goals.steps||8000)).length]])}
   if(all||r.type===2){const f=S.fin.filter(x=>inR(x.date,s,e)),i=f.filter(x=>x.inc).reduce((a,x)=>a+x.amt,0),g=f.filter(x=>!x.inc).reduce((a,x)=>a+x.amt,0);const c={};f.filter(x=>!x.inc).forEach(x=>c[x.cat]=(c[x.cat]||0)+x.amt);
-    sec('Finans',[['Toplam gelir',money(i)],['Toplam gider',money(g)],['Net durum',money(i-g)],['Tasarruf oranı',i?'%'+Math.round((i-g)/i*100):'—'],...Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>['  • '+k,money(v)])])}
+    sec('Finans',[['Toplam gelir',money(i)],['Toplam gider',money(g)],['Net durum',money(i-g)],['Tasarruf oranı',i?'%'+Math.round((i-g)/i*100):'—'],['Düzenli ödemeler (aylık)',money(S.pays.filter(p=>p.active).reduce((x,p)=>x+p.amt,0))],...Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>['  • '+k,money(v)])])}
   if(all||r.type===3){const t=S.tasks.filter(x=>inR(x.date,s,e)),d=t.filter(x=>x.status===2).length;sec('Görevler',[['Toplam',t.length],['Tamamlanan',d],['Devam eden',t.filter(x=>x.status===1).length],['Bekleyen',t.filter(x=>x.status===0).length],['Tamamlanma oranı',t.length?'%'+Math.round(d/t.length*100):'—']])}
   if(all||r.type===4){const m=S.meals.filter(x=>inR(x.date,s,e)),days=new Set(m.map(x=>x.date.toDateString())).size,c=m.reduce((a,x)=>a+(x.cal||0),0);sec('Beslenme',[['Kaydedilen öğün',m.length],['Toplam kalori',c.toLocaleString(TR)+' kcal'],['Günlük ortalama',days?Math.round(c/days).toLocaleString(TR)+' kcal':'—']])}
   if(all)sec('Eğitim · Gelişim · Sosyal · Kariyer',Object.keys(MODINFO).map(k=>{const l=S.mods.filter(x=>x.mod===k);return[MODINFO[k][0],`${l.length} kayıt, ${l.filter(x=>x.status===2).length} tamamlandı`]}));
@@ -616,25 +628,44 @@ function stepRec(d){d=new Date(d);d.setHours(0,0,0,0);let r=S.steps.find(x=>same
 const stepsOn=d=>{const r=S.steps.find(x=>sameDay(x.date,d));return r?r.n:0};
 const stepKm=n=>n*(S.goals.stride||72)/100000;
 function stepKcal(n){const w=S.health.filter(x=>x.w).sort((a,b)=>b.date-a.date)[0];return Math.round(n*0.04*((w?w.w:70)/70))}
-const PED={on:false,f:9.8,avg:9.8,up:false,last:0,wake:null,save:0};
+const PED={on:false,f:9.8,avg:9.8,up:false,last:0,wake:null,save:0,pend:0,walk:false,pocket:false};
 function pedMotion(e){const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;
   const m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z);PED.f=PED.f*.75+m*.25;PED.avg=PED.avg*.97+PED.f*.03;
   const t=performance.now(),d=PED.f-PED.avg;
-  if(!PED.up&&d>1.15){PED.up=true;if(t-PED.last>300){PED.last=t;stepRec(today()).n++;pedUI()}}
+  if(!PED.up&&d>1.15){PED.up=true;pedPeak(t)}
   else if(PED.up&&d<0.25)PED.up=false}
+// Ritim kontrolü: tek tük sarsıntıları saymaz; art arda 4 adım ritmi yakalanınca saymaya başlar
+function pedPeak(t){const dt=t-PED.last;if(dt<280)return;PED.last=t;
+  if(dt>2000){PED.pend=1;PED.walk=false;return}
+  if(PED.walk){stepRec(today()).n++;pedUI();return}
+  PED.pend=(PED.pend||0)+1;if(PED.pend>=4){stepRec(today()).n+=PED.pend;PED.walk=true;PED.pend=0;pedUI()}}
 function pedUI(){const n=stepsOn(today());const g=S.goals.steps||8000;
   const el=$('#stepNow');if(el){el.textContent=n.toLocaleString(TR);$('#stepRing').innerHTML=stepRing(n,g,true);$('#stepKm').textContent=num(stepKm(n),2)+' km';$('#stepKcal').textContent=stepKcal(n)+' kcal'}
   const pill=$('#pedPill');if(pill)pill.querySelector('b').textContent=n.toLocaleString(TR);
+  const pk=$('#pocketN');if(pk){pk.textContent=n.toLocaleString(TR);$('#pocketKm').textContent=num(stepKm(n),2)+' km · %'+Math.min(100,Math.round(n/g*100))}
   if(performance.now()-PED.save>4000){PED.save=performance.now();save()}}
 window.pedToggle=async()=>{
-  if(PED.on){PED.on=false;removeEventListener('devicemotion',pedMotion);try{PED.wake&&PED.wake.release()}catch(e){}PED.wake=null;save();render();toast('Yürüme sayar durduruldu');return}
+  if(PED.on){PED.on=false;pocketOff();removeEventListener('devicemotion',pedMotion);try{PED.wake&&PED.wake.release()}catch(e){}PED.wake=null;save();render();toast('Yürüme sayar durduruldu');return}
   if(typeof DeviceMotionEvent==='undefined'){toast('Bu cihazda hareket sensörü yok');return}
   try{if(typeof DeviceMotionEvent.requestPermission==='function'){const p=await DeviceMotionEvent.requestPermission();if(p!=='granted'){alertBox('İzin gerekli','Adım saymak için "Hareket ve Yönelim" iznine "İzin Ver" deyin. Reddettiyseniz uygulamayı kapatıp yeniden açın.');return}}}
   catch(e){toast('Sensör izni alınamadı');return}
-  PED.on=true;PED.f=PED.avg=9.8;PED.up=false;addEventListener('devicemotion',pedMotion);
+  PED.on=true;PED.f=PED.avg=9.8;PED.up=false;PED.pend=0;PED.walk=false;addEventListener('devicemotion',pedMotion);
   try{if('wakeLock' in navigator)PED.wake=await navigator.wakeLock.request('screen')}catch(e){}
   render();toast('Yürüme sayar başladı 👣')};
-document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'&&PED.on&&'wakeLock' in navigator){try{PED.wake=await navigator.wakeLock.request('screen')}catch(e){}}if(document.visibilityState==='hidden')save()});
+document.addEventListener('visibilitychange',async()=>{
+  if(document.visibilityState==='hidden'){save();if(PED.on)PED.hidAt=Date.now();return}
+  if(PED.on){if('wakeLock' in navigator){try{PED.wake=await navigator.wakeLock.request('screen')}catch(e){}}
+    if(PED.hidAt&&Date.now()-PED.hidAt>5000)toast('Ekran kapandığı için sayım bir süre durdu');PED.hidAt=0}});
+// CEP MODU: ekranı karartır, cepteyken yanlış dokunuşları engeller
+window.pocketOn=()=>{if(!PED.on)return;PED.pocket=true;const g=S.goals.steps||8000,n=stepsOn(today());
+  const el=document.createElement('div');el.id='pocket';el.className='pocket';
+  el.innerHTML=`<div class="pk-in"><div class="pk-t">👣 CEP MODU</div><div id="pocketN" class="pk-n">${n.toLocaleString(TR)}</div><div class="pk-s">adım</div><div id="pocketKm" class="pk-s">${num(stepKm(n),2)} km · %${Math.min(100,Math.round(n/g*100))}</div>
+  <div class="pk-h">Telefonu cebinize koyun ve yürüyün.<br>Ekranı kilitlemeyin (yan tuşa basmayın).</div><div class="pk-u" id="pkU"><i></i><span>Açmak için 2 sn basılı tutun</span></div></div>`;
+  $('#screen').appendChild(el);
+  const u=$('#pkU');let tm=null;const start=e=>{e.preventDefault();u.classList.add('hold');tm=setTimeout(()=>{pocketOff();render()},2000)};const end=()=>{u.classList.remove('hold');clearTimeout(tm)};
+  u.addEventListener('touchstart',start,{passive:false});u.addEventListener('mousedown',start);['touchend','touchcancel','mouseup','mouseleave'].forEach(x=>u.addEventListener(x,end));
+  el.addEventListener('touchmove',e=>e.preventDefault(),{passive:false})};
+function pocketOff(){PED.pocket=false;const el=$('#pocket');if(el)el.remove()}
 function stepRing(n,g,big){const r=big?78:40,sw=big?14:10,S2=big?190:110,C=2*Math.PI*r,v=Math.min(1,n/g);
   return`<svg viewBox="0 0 ${S2} ${S2}" style="width:100%;max-width:${S2}px;display:block;margin:auto"><circle cx="${S2/2}" cy="${S2/2}" r="${r}" fill="none" stroke="${K().ln}" stroke-width="${sw}"/><circle cx="${S2/2}" cy="${S2/2}" r="${r}" fill="none" stroke="${v>=1?'#22B573':'#1E88FF'}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${C*v} ${C}" transform="rotate(-90 ${S2/2} ${S2/2})"/>
   <text x="${S2/2}" y="${S2/2-(big?6:0)}" text-anchor="middle" font-size="${big?34:18}" font-weight="700" fill="${K().pd}">%${Math.round(v*100)}</text>${big?`<text x="${S2/2}" y="${S2/2+22}" text-anchor="middle" font-size="12" fill="${K().mu}">hedef ${g.toLocaleString(TR)}</text>`:''}</svg>`}
@@ -649,9 +680,11 @@ pages.steps=()=>{const T=today(),n=stepsOn(T),g=S.goals.steps||8000;
     <div id="stepNow" style="font-size:44px;font-weight:800;color:var(--pd);line-height:1.1;margin-top:4px">${n.toLocaleString(TR)}</div><div class="mu" style="margin-bottom:8px">adım</div>
     <div id="stepRing">${stepRing(n,g,true)}</div>
     <div class="g2" style="margin-top:12px"><div class="card" style="margin:0;padding:10px;background:var(--pl)"><div class="mu">Mesafe</div><b id="stepKm" style="font-size:17px">${num(stepKm(n),2)} km</b></div><div class="card" style="margin:0;padding:10px;background:var(--pl)"><div class="mu">Yakılan</div><b id="stepKcal" style="font-size:17px">${stepKcal(n)} kcal</b></div></div>
-    <button class="btn" style="margin-top:12px;${PED.on?'background:var(--r)':''}" onclick="pedToggle()">${PED.on?'⏹ Saymayı Durdur':'▶ Yürüyüşe Başla (canlı say)'}</button>
-    ${PED.on?'<p class="mu" style="margin-top:8px">👣 Sayılıyor… Telefonu cebinizde veya elinizde taşıyın. Ekran açık kalır; uygulamadan çıkarsanız sayım durur.</p>':''}
-    <button class="btn2" style="width:100%;margin-top:8px" onclick="addSteps()">✏️ Adım Sayısını Gir (Sağlık uygulamasından)</button>
+    <button class="btn" style="margin-top:12px;${PED.on?'background:var(--r)':''}" onclick="pedToggle()">${PED.on?'⏹ Saymayı Durdur':'▶ Yürüyüşe Başla'}</button>
+    ${PED.on?'<button class="btn" style="margin-top:8px;background:#0E1B3D" onclick="pocketOn()">🔒 Cep Modu — telefonu cebe koy</button><p class="mu" style="margin-top:8px;line-height:1.45">👣 Sayılıyor… Cep Modu ekranı karartır ve cepteki yanlış dokunuşları engeller. Ekranı kilitlemeyin; kilitlenirse iPhone sayımı durdurur.</p>':'<p class="mu" style="margin-top:8px;line-height:1.45">Başlatın, sonra <b>🔒 Cep Modu</b>na dokunup telefonu cebinize koyun.</p>'}
+    <button class="btn" style="margin-top:8px;background:linear-gradient(135deg,#F0384B,#FF6B81)" onclick="healthImport()">❤️ iPhone Sağlık'tan Al</button>
+    ${st.waitPaste?'<button class="btn" style="margin-top:8px;background:var(--g)" onclick="healthPaste()">📋 Adımları Yapıştır</button>':''}
+    <button class="btn2" style="width:100%;margin-top:8px" onclick="addSteps()">✏️ Adım Sayısını Elle Gir</button>
   </div></div><div>
   <div class="card"><span class="st">📊 Son 7 Gün</span>${barChart(days.map(d=>d.toLocaleDateString(TR,{weekday:'short'})),[{v:vals,c:'#1E88FF',fmt:v=>v.toLocaleString(TR)+' adım'}])}
     <div class="g2" style="margin-top:6px;text-align:center"><div><div class="mu">Haftalık toplam</div><b>${week.toLocaleString(TR)}</b></div><div><div class="mu">Günlük ortalama</div><b>${act?Math.round(week/act).toLocaleString(TR):'—'}</b></div>
@@ -660,14 +693,212 @@ pages.steps=()=>{const T=today(),n=stepsOn(T),g=S.goals.steps||8000;
     <label>Günlük adım hedefi</label><input id="sgoal" type="number" inputmode="numeric" value="${g}">
     <label>Adım uzunluğu (cm) — ortalama 65–80</label><input id="sstride" type="number" inputmode="numeric" value="${S.goals.stride||72}">
     <button class="btn" style="margin-top:12px" onclick="saveStepGoal()">Kaydet</button></div>
-  <p class="mu" style="line-height:1.5">ℹ️ iPhone web uygulamaları arka planda adım sayamaz. Canlı sayım yalnızca VİTANEX açıkken çalışır. Gün boyu attığınız adımları iPhone <b>Sağlık</b> uygulamasından bakıp "Adım Sayısını Gir" ile ekleyebilirsiniz. Hedefe ulaştığınız günler serinize eklenir.</p>
+  <div class="card"><span class="st">❤️ Uygulamayı açmadan saydırın</span>
+   <p style="font-size:14px;line-height:1.55;margin-top:8px">iPhone zaten cebinizdeyken adımlarınızı <b>Sağlık</b> uygulamasında kendisi sayar. VİTANEX bu sayıyı akşam tek dokunuşla alır. Bunun için bir kez <b>Kestirmeler</b> uygulamasında küçük bir kestirme oluşturun:</p>
+   <ol style="font-size:14px;line-height:1.6;margin:8px 0 0 20px">
+    <li><b>Kestirmeler</b> uygulamasını açın → sağ üstte <b>+</b></li>
+    <li><b>Eylem Ekle</b> → aramaya <b>Sağlık Örneklerini Bul</b> yazıp seçin <span class="mu">(Find Health Samples)</span>. Tür: <b>Adımlar</b>, filtre: <b>Başlangıç Tarihi → Bugün</b>.</li>
+    <li>Sonra <b>İstatistikleri Hesapla</b> ekleyin <span class="mu">(Calculate Statistics)</span> → <b>Toplam</b>.</li>
+    <li>Sonra <b>Panoya Kopyala</b> ekleyin <span class="mu">(Copy to Clipboard)</span>.</li>
+    <li>Kestirmenin adını tam olarak <b>VİTANEX Adim</b> yapın ve kaydedin. İlk çalıştırmada Sağlık iznine <b>İzin Ver</b> deyin.</li>
+   </ol>
+   <p style="font-size:14px;line-height:1.55;margin-top:8px">Akşam VİTANEX'te <b>❤️ iPhone Sağlık'tan Al</b>'a dokunun → kestirme çalışır → VİTANEX'e geri dönün → <b>📋 Adımları Yapıştır</b>. Bugünün adımı kaydedilir.</p></div>
+  <p class="mu" style="line-height:1.5">ℹ️ <b>Yürüyüşe Başla</b> ile VİTANEX açıkken de canlı sayabilirsiniz (Cep Modu). Hedefe ulaştığınız günler serinize eklenir.</p>
   </div></div>`};
 pages.steps.fab=()=>addSteps();
+// iPhone Sağlık → Kestirme → pano → VİTANEX
+window.healthImport=()=>{st.waitPaste=true;render();location.href='shortcuts://run-shortcut?name='+encodeURIComponent('VİTANEX Adim')};
+function parseSteps(t){let s=String(t||'').replace(/[^\d.,]/g,'');if(!s)return null;
+  const m=s.match(/[.,](\d{1,2})$/);if(m)s=s.slice(0,-m[0].length);   // 8234,0 → 8234
+  s=s.replace(/[.,]/g,'');const n=parseInt(s,10);return isFinite(n)&&n>=0&&n<=200000?n:null}
+window.healthPaste=async()=>{let t=null;
+  try{t=await navigator.clipboard.readText()}catch(e){}
+  if(t==null||t===''){t=prompt('Panodaki adım sayısını buraya yapıştırın:','')}
+  const n=parseSteps(t);
+  if(n==null){toast('Panoda adım sayısı bulunamadı. Kestirmeyi kontrol edin.');return}
+  const r=stepRec(today()),old=r.n;r.n=n;st.waitPaste=false;render();
+  toast(`❤️ Sağlık'tan alındı: ${n.toLocaleString(TR)} adım`+(old&&old!==n?` (önceki ${old.toLocaleString(TR)})`:''))};
 window.addSteps=()=>form('Adım Sayısı',[{k:'d',l:'Tarih',t:'date'},{k:'n',l:'O günün toplam adımı',t:'num',ph:'örn. 7500'}],{d:dIn(today()),n:stepsOn(today())||''},
   v=>{const n=Math.round(P(v.n)||0);if(n<0||n>100000)return'Geçerli bir adım sayısı girin.';stepRec(fromIn(v.d)).n=n});
 window.saveStepGoal=()=>{const g=Math.round(P($('#sgoal').value)||0),s=Math.round(P($('#sstride').value)||0);
   if(g<500||g>100000){toast('Hedef 500–100.000 arası olmalı');return}if(s<40||s>120){toast('Adım uzunluğu 40–120 cm olmalı');return}
   S.goals.steps=g;S.goals.stride=s;render();toast('Kaydedildi ✓')};
+
+
+// DÜZENLİ ÖDEMELER (kredi, kart, KMH, kira, aidat…)
+const PAYT=[['Kredi Taksiti','🏦'],['Kredi Kartı','💳'],['KMH (Ek Hesap)','🏧'],['Kira','🏠'],['Aidat','🏢'],['Fatura','🧾'],['Diğer','📌']];
+const payIcon=t=>(PAYT.find(x=>x[0]===t)||PAYT[6])[1];
+const payCat=t=>t==='Fatura'?'Faturalar':EXP.includes(t)?t:'Diğer';
+const mKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+function dueIn(p,m){const last=new Date(m.getFullYear(),m.getMonth()+1,0).getDate();return new Date(m.getFullYear(),m.getMonth(),Math.min(p.day,last))}
+// Sıradaki (ödenmemiş) ödeme günü; geçen ay ödenmediyse onu gösterir
+function payNext(p){const T=today(),M0=addM(T,0),prev=addM(M0,-1);
+  const pd=dueIn(p,prev);if(p.since&&pd>=new Date(p.since)&&!p.paid.includes(mKey(pd)))return pd;
+  let d=dueIn(p,M0);if(p.paid.includes(mKey(d)))d=dueIn(p,addM(M0,1));return d}
+const payDays=p=>Math.round((payNext(p)-today())/864e5);
+function payWhen(n){return n<0?`<b style="color:var(--r)">${-n} gün gecikti!</b>`:n===0?'<b style="color:var(--r)">BUGÜN</b>':n===1?'<b style="color:var(--o)">Yarın</b>':`${n} gün kaldı`}
+const payDue=()=>S.pays.filter(p=>p.active&&payDays(p)<=1).sort((a,b)=>payDays(a)-payDays(b));
+
+function paysCard(){const L=S.pays.filter(p=>p.active).sort((a,b)=>payDays(a)-payDays(b));
+  const tot=L.reduce((a,p)=>a+p.amt,0),perm=('Notification' in window)?Notification.permission:'none';
+  return`<div class="card"><div class="row"><span class="st">📅 Düzenli Ödemeler</span><span class="sp"></span><button class="btn2" onclick="addPay()">+ Ekle</button></div>
+  <p class="mu" style="margin-top:4px">Aylık toplam: <b>${money(tot)}</b> · ${L.length} ödeme</p>
+  ${L.length?L.map(p=>{const n=payDays(p),d=payNext(p);return`<div class="li" onclick="payTap(${p.id})"><span class="e">${payIcon(p.type)}</span><div style="flex:1;min-width:0"><div class="t">${esc(p.name)}</div><div class="mu">${p.type} · ödeme günü: ${p.day}${p.left!=null?` · kalan ${p.left} taksit`:''}</div><div style="font-size:12.5px;margin-top:2px">${d.toLocaleDateString(TR,{day:'numeric',month:'long'})} · ${payWhen(n)}</div></div><b style="color:var(--r);white-space:nowrap">${money(p.amt,0)}</b></div>`}).join(''):'<p class="mu" style="padding:10px 0">Kredi taksiti, kredi kartı, KMH, kira, aidat gibi her ay ödediklerinizi ekleyin; bir gün önce ve ödeme günü hatırlatılır.</p>'}
+  ${L.length?`<button class="btn2" style="width:100%;margin-top:10px" onclick="payCal()">📅 Tümünü iPhone Takvimine Ekle (bildirim)</button>`:''}
+  ${perm==='default'?`<button class="btn2" style="width:100%;margin-top:8px" onclick="payPerm()">🔔 Uygulama bildirimlerine izin ver</button>`:''}
+  </div>`}
+
+window.addPay=(p)=>form(p?'Ödemeyi Düzenle':'Yeni Düzenli Ödeme',[
+  {k:'type',l:'Tür',t:'select',o:PAYT.map(x=>x[0])},
+  {k:'name',l:'Açıklama',ph:'örn. Ziraat konut kredisi, Bonus kart, Ev kirası'},
+  {k:'amt',l:'Aylık tutar (₺)',t:'num',ph:'4500'},
+  {k:'day',l:'Ödeme günü (ayın kaçı? 1–31)',t:'num',ph:'15'},
+  {k:'left',l:'Kalan taksit sayısı (kredi için, boş bırakılabilir)',t:'num',ph:'örn. 24'}],
+  p?{type:p.type,name:p.name,amt:num(p.amt,2),day:p.day,left:p.left??''}:{type:'Kredi Taksiti',day:15},
+  v=>{const a=P(v.amt),d=Math.round(P(v.day)||0),l=v.left===''||v.left==null?null:Math.round(P(v.left));
+    if(!a||a<=0)return'Geçerli bir tutar girin.';if(d<1||d>31)return'Ödeme günü 1 ile 31 arasında olmalı.';if(l!=null&&(isNaN(l)||l<1))return'Kalan taksit 1 veya daha fazla olmalı.';
+    const o={type:v.type,name:v.name.trim()||v.type,amt:a,day:d,left:l};
+    if(p)Object.assign(p,o);else{const n={id:uid++,...o,active:true,paid:[],since:today().toISOString()};const d=dueIn(n,addM(today(),0));if(d<today())n.paid.push(mKey(d));S.pays.push(n)}});
+
+window.payTap=id=>{const p=S.pays.find(x=>x.id===id),d=payNext(p);
+  sheet(`${payIcon(p.type)} ${p.name} — ${money(p.amt,0)}`,[
+    [`✓ Ödendi (${d.toLocaleDateString(TR,{day:'numeric',month:'long'})}) — gidere ekle`,()=>payDone(p)],
+    ['📅 iPhone Takvimine ekle (bildirim)',()=>payCal([p])],
+    ['Düzenle',()=>addPay(p)],
+    ['Sil',()=>{S.pays.splice(S.pays.indexOf(p),1);render()},'del']])};
+
+function payDone(p){const d=payNext(p);
+  S.fin.push({id:uid++,inc:false,desc:p.name,amt:p.amt,date:new Date(),cat:payCat(p.type)});
+  p.paid.push(mKey(d));if(p.paid.length>36)p.paid=p.paid.slice(-36);
+  let msg=`✓ ${p.name} ödendi, gidere eklendi`;
+  if(p.left!=null){p.left--;if(p.left<=0){p.active=false;msg=`🎉 ${p.name} bitti! Son taksit ödendi.`}}
+  render();toast(msg)}
+
+// ── iPhone Takvimi (.ics): bir gün önce 09:00 ve ödeme günü 09:00 bildirim ──
+function icsEsc(s){return String(s).replace(/\\/g,'\\\\').replace(/[,;]/g,m=>'\\'+m).replace(/\n/g,'\\n')}
+const icsD=d=>d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+function payICS(list){const now=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+  const ev=list.map(p=>{const d=payNext(p),last=p.day>28;
+    const rule='FREQ=MONTHLY;'+(last?'BYMONTHDAY=-1':'BYMONTHDAY='+p.day)+(p.left!=null?';COUNT='+p.left:'');
+    return['BEGIN:VEVENT','UID:vitanex-pay-'+p.id+'@trocki','DTSTAMP:'+now,'DTSTART;VALUE=DATE:'+icsD(d),'DTEND;VALUE=DATE:'+icsD(addD(d,1)),'RRULE:'+rule,
+      'SUMMARY:'+icsEsc(`${payIcon(p.type)} ${p.name} — ${money(p.amt,0)}`),
+      'DESCRIPTION:'+icsEsc(`${p.type} ödemesi · TROÇKİ VİTANEX`+(last?` · (ayın son günü)`:'')),
+      'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc(`Yarın ödeme: ${p.name} ${money(p.amt,0)}`),'TRIGGER:-PT15H','END:VALARM',
+      'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc(`Bugün ödeme günü: ${p.name} ${money(p.amt,0)}`),'TRIGGER:PT9H','END:VALARM','END:VEVENT'].join('\r\n')});
+  return['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TROCKI//VITANEX//TR','CALSCALE:GREGORIAN','METHOD:PUBLISH',...ev,'END:VCALENDAR'].join('\r\n')}
+window.payCal=(list)=>{list=list||S.pays.filter(p=>p.active);if(!list.length)return;openICS(payICS(list),'VITANEX_odemeler.ics')};
+function openICS(text,name){
+  const blob=new Blob([text],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob);
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(ios){location.href=url}else{const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove()}
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+  toast('Açılan ekranda "Tümünü Ekle"ye dokunun')}
+
+// ── Uygulama bildirimi (uygulama açıldığında) ──
+window.payPerm=async()=>{try{const r=await Notification.requestPermission();toast(r==='granted'?'Bildirimler açıldı 🔔':'Bildirim izni verilmedi');payNotify();render()}catch(e){toast('Bu cihaz bildirimi desteklemiyor')}};
+async function payNotify(){if(!('Notification' in window)||Notification.permission!=='granted')return;
+  const key=today().toDateString();S.notified=S.notified||{};
+  for(const p of payDue()){const id=p.id+'|'+key;if(S.notified[id])continue;S.notified[id]=1;
+    const n=payDays(p),body=`${p.name} — ${money(p.amt,0)} (${n<0?-n+' gün gecikti':n===0?'bugün':'yarın'})`;
+    try{const reg=await navigator.serviceWorker?.getRegistration();if(reg)await reg.showNotification('💳 Ödeme hatırlatma',{body,tag:'pay'+p.id,icon:'icon-192.png'});else new Notification('💳 Ödeme hatırlatma',{body})}catch(e){}}
+  for(const k of Object.keys(S.notified))if(!k.endsWith(key))delete S.notified[k];save()}
+
+
+// ───────── AYLIK MENÜ (kilo vermeye yönelik, Türk mutfağı, ~1.400–1.550 kcal/gün) ─────────
+const MENU={
+ 'Kahvaltı':[
+  ['2 haşlanmış yumurta, 30 g beyaz peynir, domates-salatalık, 5 zeytin, 1 ince dilim tam buğday ekmeği',380],
+  ['Sebzeli menemen (2 yumurta, 1 tatlı kaşığı zeytinyağı), 1 ince dilim tam buğday ekmeği',360],
+  ['Yulaf lapası (40 g yulaf, 1 su bardağı yarım yağlı süt), yarım elma, tarçın, 2 ceviz içi',380],
+  ['Lor peynirli omlet (2 yumurta + 2 yemek kaşığı lor), maydanoz, roka, 1 ince dilim çavdar ekmeği',370],
+  ['40 g beyaz peynir, 1 haşlanmış yumurta, bol yeşillik, 1 ince dilim tam buğday ekmeği, 1 çay kaşığı bal',360],
+  ['200 g yoğurt + 2 yemek kaşığı yulaf + yarım muz + 1 tatlı kaşığı keten tohumu',340],
+  ['Ispanaklı yumurta (2 yumurta), domates, 1 ince dilim tam buğday ekmeği',350],
+  ['Tam buğday ekmeğiyle peynirli tost (40 g peynir), domates-salatalık, şekersiz çay',380],
+  ['1 haşlanmış yumurta, 30 g kaşar, yeşil biber, 2 ceviz içi, 1 ince dilim tam buğday ekmeği',390],
+  ['Çılbır (2 yumurta, sarımsaklı yoğurt, az pul biberli tereyağı), 1 ince dilim tam buğday ekmeği',400],
+  ['Mantarlı omlet (2 yumurta), yeşillik tabağı, 1 ince dilim çavdar ekmeği',350],
+  ['150 g süzme yoğurt + 1 kase mevsim meyvesi + 1 yemek kaşığı ceviz',310],
+  ['60 g lor peyniri, 1 haşlanmış yumurta, domates, salatalık, 6 zeytin, 1 ince dilim tam buğday ekmeği',380],
+  ['Yulaf lapası (40 g yulaf, süt) + 1 tatlı kaşığı şekersiz fıstık ezmesi + tarçın',390],
+  ['Domatesli-biberli omlet (2 yumurta, 20 g kaşar), 1 ince dilim tam buğday ekmeği',380]],
+ 'Öğle Yemeği':[
+  ['1 kase mercimek çorbası, bol mevsim salatası (1 tatlı kaşığı zeytinyağı), 1 ince dilim tam buğday ekmeği',400],
+  ['Izgara tavuk göğsü (120 g), 4 yemek kaşığı bulgur pilavı, çoban salata',480],
+  ['Zeytinyağlı taze fasulye, 1 kase yoğurt, 1 ince dilim tam buğday ekmeği',420],
+  ['Nohutlu ton balığı salatası (yağı süzülmüş ton, 4 yemek kaşığı nohut, yeşillik, limon)',450],
+  ['1 kase az yağlı kuru fasulye, cacık, bol yeşil salata',450],
+  ['Tavuklu sebze sote, 1 kase yoğurt',430],
+  ['1 kase ezogelin çorbası, 3 ızgara köfte, mevsim salatası',480],
+  ['Zeytinyağlı enginar, 1 kase yoğurt, 1 ince dilim tam buğday ekmeği',380],
+  ['Fırında derisiz tavuk baget (1 adet) ve sebzeler, yeşil salata',450],
+  ['Yeşil mercimek yemeği, cacık, 1 ince dilim tam buğday ekmeği',450],
+  ['Zeytinyağlı kabak, 1 kase yoğurt, 4 yemek kaşığı bulgur pilavı',430],
+  ['Tavuk şiş (6 parça), közlenmiş biber-domates, 3 yemek kaşığı bulgur pilavı',490],
+  ['Yumurtalı ıspanak yemeği, 1 kase yoğurt, 1 ince dilim tam buğday ekmeği',400],
+  ['1 kase nohut yemeği, mevsim salatası',430],
+  ['1 porsiyon tam buğday makarna (domates soslu, ton balıklı), yeşil salata',500]],
+ 'Akşam Yemeği':[
+  ['Fırında somon (120 g), buharda brokoli, yeşil salata',480],
+  ['Etli kabak dolması (4 adet), 1 kase yoğurt',450],
+  ['4 ızgara köfte, közlenmiş biber ve domates, roka salatası',470],
+  ['Fırında levrek, roka-maydanoz salatası, limon',420],
+  ['Zeytinyağlı bezelye, 1 kase yoğurt, 1 ince dilim tam buğday ekmeği',400],
+  ['Sebzeli tavuk sote, 3 yemek kaşığı bulgur pilavı',470],
+  ['Mantar sote, lor peynirli çoban salata, 1 ince dilim tam buğday ekmeği',400],
+  ['Fırında az yağlı patlıcan musakka, cacık',480],
+  ['1 kase sebze çorbası, 2 dilim ızgara hellim, yeşil salata',430],
+  ['Hamsi ya da istavrit buğulama, bol salata',450],
+  ['Az kıymalı ıspanak yemeği, 1 kase yoğurt',400],
+  ['Etli türlü, 1 kase yoğurt',450],
+  ['Fırında tavuk göğsü, fırın mevsim sebzeleri',430],
+  ['Zeytinyağlı pırasa, 1 kase yoğurt, 1 ince dilim tam buğday ekmeği',380],
+  ['6 adet mercimek köftesi, marul-maydanoz, 1 bardak ayran',430]],
+ 'Ara Öğün':[
+  ['1 küçük elma + 10 çiğ badem',170],['1 kase yoğurt + tarçın',120],['1 armut',100],['2 ceviz içi + 2 kuru kayısı',150],
+  ['1 bardak ayran + 1 mandalina',120],['Havuç-salatalık çubukları + 2 yemek kaşığı humus',130],['1 portakal',80],
+  ['1 bardak kefir',120],['2 kuru incir + 5 fındık',150],['1 küçük muz',100]]};
+const MENU_TIPS=['Günde en az 2–2,5 litre su için; acıkınca önce bir bardak su.','Tabağın yarısı sebze, çeyreği protein, çeyreği tahıl olsun.','Şekerli içecek, beyaz ekmek ve kızartmayı azaltın.','Yemeği yavaş yiyin; doyma hissi 20 dakikada gelir.','Akşam yemeğini yatmadan en az 3 saat önce bitirin.','Her gün en az 30 dakika yürüyün; Yürüme Sayar hedefinizi takip edin.','Tuzu azaltın; baharat ve limonla tatlandırın.','Haftada 0,5–1 kg kayıp sağlıklı bir hızdır.'];
+// 30 günlük plan: her gün farklı kahvaltı / öğle / akşam / ara öğün birleşimi
+function menuIdx(day,type){const i=(day-1)%30,h=i>=15;
+  return type==='Kahvaltı'?i%15:type==='Öğle Yemeği'?(i*7+(h?5:0))%15:type==='Akşam Yemeği'?(i*4+(h?2:0))%15:type==='İkindi'?(i+5)%10:i%10}
+const menuDay=d=>((d.getDate()-1)%30)+1;
+const dKey=d=>d.toDateString();
+function menuItem(d,type){const sw=(S.menuSwap||{})[dKey(d)]||{},L=MENU[type==='İkindi'?'Ara Öğün':type];const k=((sw[type]!=null?sw[type]:menuIdx(menuDay(d),type))%L.length+L.length)%L.length;return{k,text:L[k][0],cal:L[k][1]}}
+const MTYPES=[['Kahvaltı','🍳'],['Ara Öğün','🍎'],['Öğle Yemeği','🥗'],['İkindi','🍐'],['Akşam Yemeği','🍲']];
+const MLABEL={'Ara Öğün':'Kuşluk Ara Öğünü','İkindi':'İkindi Ara Öğünü'};
+function menuCard(day){const tot=MTYPES.reduce((a,[t])=>a+menuItem(day,t).cal,0),goal=S.goals.cal||2000;
+  const eaten=t=>S.meals.some(m=>sameDay(m.date,day)&&m.menu&&(m.slot||m.type)===t);
+  return`<div class="card" style="background:linear-gradient(135deg,#E9F9F0,#F2F6FC)"><div class="row"><span class="st">🥗 Günün Menüsü</span><span class="sp"></span><span class="mu">Gün ${menuDay(day)} / 30</span></div>
+  <p class="mu" style="margin-top:4px">Kilo vermeye yönelik · yaklaşık <b>${tot.toLocaleString(TR)} kcal</b>${goal<tot?'':` · hedefiniz ${goal.toLocaleString(TR)} kcal`}</p>
+  ${MTYPES.map(([t,ic])=>{const m=menuItem(day,t),e=eaten(t);return`<div style="border-top:1px solid var(--ln);padding:10px 0;margin-top:8px">
+   <div class="row"><span style="font-size:20px">${ic}</span><b style="color:var(--pd)">${MLABEL[t]||t}</b><span class="sp"></span><span class="mu">${m.cal} kcal</span></div>
+   <p style="font-size:14px;line-height:1.45;margin:4px 0 8px;${e?'color:var(--mu);text-decoration:line-through':''}">${esc(m.text)}</p>
+   <div class="row"><button class="btn2" style="flex:1;${e?'background:var(--g);color:#fff':''}" onclick="menuEat('${t}')">${e?'✓ Yedim':'✓ Yedim, kaydet'}</button><button class="btn2" onclick="menuSwap('${t}')">🔄 Değiştir</button></div></div>`}).join('')}
+  <button class="btn2" style="width:100%;margin-top:6px" onclick="go('menuplan')">📅 Aylık Planı Gör</button>
+  <button class="btn2" style="width:100%;margin-top:8px" onclick="mealCal()">🔔 Öğün saatlerini iPhone Takvimine ekle</button>
+  <p class="mu" style="margin-top:6px;line-height:1.45">Takvime eklenince her gün 08:00 · 10:30 · 12:30 · 16:00 · 19:00'da telefonunuza bildirim gelir; dokununca VİTANEX'ten o günün menüsüne bakarsınız.</p></div>`}
+// Öğün saatleri → iPhone Takvimi (her gün tekrar eden, saatinde bildirimli)
+window.mealCal=()=>{const T=addD(today(),1),now=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+  const times={'Kahvaltı':'080000','Ara Öğün':'103000','Öğle Yemeği':'123000','İkindi':'160000','Akşam Yemeği':'190000'};
+  const ev=MTYPES.map(([t,ic],i)=>['BEGIN:VEVENT','UID:vitanex-meal-'+i+'@trocki','DTSTAMP:'+now,'DTSTART:'+icsD(T)+'T'+times[t],'DURATION:PT15M','RRULE:FREQ=DAILY',
+    'SUMMARY:'+icsEsc(`${ic} ${MLABEL[t]||t} zamanı`),'DESCRIPTION:'+icsEsc('Bugünün menüsü için VİTANEX → Beslenme'),
+    'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc(`${ic} ${MLABEL[t]||t} zamanı — VİTANEX menüne bak`),'TRIGGER:PT0M','END:VALARM','END:VEVENT'].join('\r\n'));
+  openICS(['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TROCKI//VITANEX//TR','CALSCALE:GREGORIAN','METHOD:PUBLISH',...ev,'END:VCALENDAR'].join('\r\n'),'VITANEX_ogunler.ics')};
+window.menuEat=t=>{const day=st.nday||today();const ex=S.meals.find(m=>sameDay(m.date,day)&&m.menu&&(m.slot||m.type)===t);
+  if(ex){S.meals.splice(S.meals.indexOf(ex),1);render();toast('Kayıt geri alındı');return}
+  const m=menuItem(day,t),h={'Kahvaltı':8,'Ara Öğün':10.5,'Öğle Yemeği':12.5,'İkindi':16,'Akşam Yemeği':19}[t];
+  S.meals.push({id:uid++,date:new Date(day.getFullYear(),day.getMonth(),day.getDate(),Math.floor(h),h%1?30:0),type:t==='İkindi'?'Ara Öğün':t,slot:t,desc:m.text,cal:m.cal,menu:true});render();toast(`${MLABEL[t]||t} kaydedildi · ${m.cal} kcal`)};
+window.menuSwap=t=>{const day=st.nday||today();S.menuSwap=S.menuSwap||{};const k=dKey(day);S.menuSwap[k]=S.menuSwap[k]||{};
+  S.menuSwap[k][t]=menuItem(day,t).k+1;const keys=Object.keys(S.menuSwap);if(keys.length>40)delete S.menuSwap[keys[0]];render()};
+pages.menuplan=()=>{const T=today(),start=new Date(T.getFullYear(),T.getMonth(),1),n=new Date(T.getFullYear(),T.getMonth()+1,0).getDate();
+  return`<p class="mu" style="margin-bottom:10px;line-height:1.5">${T.toLocaleDateString(TR,{month:'long',year:'numeric'})} için 30 günlük kilo verme menüsü. Bugün vurgulu. Bir güne dokunun, o günü Beslenme sayfasında açın.</p>
+  ${[...Array(n)].map((_,i)=>{const d=addD(start,i),cur=sameDay(d,T),tot=MTYPES.reduce((a,[t])=>a+menuItem(d,t).cal,0);
+   return`<div class="card" style="cursor:pointer;${cur?'border:2px solid var(--g)':''}" onclick="st.nday=new Date(${d.getTime()});go('nutrition')">
+    <div class="row"><b style="color:var(--pd)">${d.toLocaleDateString(TR,{day:'numeric',month:'long',weekday:'long'})}</b><span class="sp"></span><span class="mu">${tot} kcal</span></div>
+    ${MTYPES.map(([t,ic])=>`<div style="font-size:13px;margin-top:6px;line-height:1.4"><span>${ic}</span> ${esc(menuItem(d,t).text)}</div>`).join('')}</div>`}).join('')}
+  <div class="card"><span class="st">💡 Kilo Verme İpuçları</span>${MENU_TIPS.map(x=>`<p style="font-size:14px;margin-top:8px">• ${x}</p>`).join('')}
+  <p class="mu" style="margin-top:10px;line-height:1.5">Bu menü genel bir öneridir. Diyabet, tansiyon, böbrek hastalığı gibi bir durumunuz varsa ya da ilaç kullanıyorsanız diyetisyeninize/doktorunuza danışın.</p></div>`};
 
 // HATIRLATICILAR / YEDEK / AYARLAR
 pages.reminders=()=>`<p class="mu" style="margin-bottom:10px;font-size:13px">Her gün tekrarlanan hatırlatıcılarınız. Ana sayfada görünür.</p><div class="card" style="padding:4px 14px">${[...S.rem].sort((a,b)=>a.time.localeCompare(b.time)).map(r=>`<div class="li" onclick="remTap(${r.id})"><b style="color:var(--p);width:50px">${r.time}</b><span class="e">${r.icon}</span><span style="flex:1">${esc(r.title)}</span><span class="mu">${r.active?'Açık':'Kapalı'}</span></div>`).join('')}</div>`;
@@ -701,12 +932,12 @@ function splash(){const el=document.createElement('div');el.className='splash';
   $('#screen').appendChild(el);setTimeout(()=>{el.style.opacity=0;setTimeout(()=>el.remove(),400)},1900)}
 // ───────── kalıcı kayıt (tarayıcı) ─────────
 const KEY='trocki_vitanex_v1';
-function empty(){S={user:'Troçki',goals:{water:2000,sleep:8,ex:30,cal:2000,steps:8000,stride:72},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[],fav:[],steps:[]};
+function empty(){S={user:'Troçki',goals:{water:2000,sleep:8,ex:30,cal:2000,steps:8000,stride:72},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[],fav:[],steps:[],pays:[],notified:{}};
   [['08:00','💧','Su iç (200 ml)'],['09:00','🚶','Sabah yürüyüşü (30 dk)'],['12:00','🍽️','Öğle yemeği'],['15:00','📖','Kitap oku (15 dk)']].forEach(([t,i,x])=>S.rem.push({id:uid++,time:t,icon:i,title:x,active:true,done:null}))}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function revive(o){['health','water','meals','fin','tasks','mods','steps'].forEach(k=>(o[k]||[]).forEach(x=>{if(x.date)x.date=new Date(x.date)}));
-  o.goals=Object.assign({water:2000,sleep:8,ex:30,cal:2000,steps:8000,stride:72},o.goals||{});['health','water','meds','meals','fin','tasks','mods','rem','fav','steps'].forEach(k=>o[k]=o[k]||[]);
-  let m=0;['health','meds','meals','fin','tasks','mods','rem'].forEach(k=>o[k].forEach(x=>{if(x.id>m)m=x.id}));uid=m+1;return o}
+  o.goals=Object.assign({water:2000,sleep:8,ex:30,cal:2000,steps:8000,stride:72},o.goals||{});['health','water','meds','meals','fin','tasks','mods','rem','fav','steps','pays'].forEach(k=>o[k]=o[k]||[]);o.notified=o.notified||{};o.pays.forEach(p=>{p.paid=p.paid||[]});
+  let m=0;['health','meds','meals','fin','tasks','mods','rem','pays'].forEach(k=>o[k].forEach(x=>{if(x.id>m)m=x.id}));uid=m+1;return o}
 function load(){try{const t=localStorage.getItem(KEY);if(t){S=revive(JSON.parse(t));return true}}catch(e){}return false}
 function lastBackup(){try{const t=localStorage.getItem('tv_lastbackup');return t?new Date(t).toLocaleString(TR):'henüz yok'}catch(e){return 'henüz yok'}}
 window.exportData=()=>{const blob=new Blob([JSON.stringify({app:'TROCKI_VITANEX',version:1,date:new Date(),data:S},null,1)],{type:'application/json'});
@@ -727,7 +958,8 @@ layout();
 let th=null;try{th=localStorage.getItem('tv_theme')}catch(e){}
 dark=th?th==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
 $('#screen').classList.toggle('dark',dark);document.body.classList.toggle('dark',dark);
-render();splash();
+render();splash();setTimeout(payNotify,2500);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')payNotify()});
 // ───────── iPhone / PWA ─────────
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 (function(){const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);

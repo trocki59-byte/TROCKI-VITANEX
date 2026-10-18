@@ -120,6 +120,8 @@ public static class ReportService
         s.Add("Net durum", Fmt.Money(inc - exp));
         s.Add("Tasarruf oranı", inc > 0 ? $"%{(inc - exp) / inc * 100:0}" : "—");
         s.Add("İşlem sayısı", recs.Count.ToString());
+        var pays = await Payments.Active();
+        if (pays.Count > 0) s.Add("Düzenli ödemeler (aylık)", $"{Fmt.Money(pays.Sum(p => p.Amount))}  ·  {pays.Count} ödeme");
 
         foreach (var g in recs.Where(r => !r.IsIncome).GroupBy(r => r.Category ?? "Diğer")
                               .Select(g => new { g.Key, Sum = g.Sum(x => x.Amount) })

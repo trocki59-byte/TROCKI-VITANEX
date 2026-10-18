@@ -17,6 +17,7 @@ public partial class App : Application
     {
         base.OnStart();
         try { await Services.StepCounter.Resume(); } catch { }
+        try { await Services.Payments.Reschedule(); } catch { }
     }
 
     protected override async void OnResume()

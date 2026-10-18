@@ -103,7 +103,7 @@ public class FinanceRecord : IEntity
         { "Maaş", "Emekli Maaşı", "Ek Gelir", "Kira Geliri", "Satış", "Faiz / Yatırım", "Diğer" };
 
     public static readonly string[] ExpenseCategories =
-        { "Market", "Faturalar", "Kira", "Ulaşım", "Sağlık", "Eğitim", "Giyim", "Yemek", "Eğlence", "Ev / Bakım", "Diğer" };
+        { "Market", "Kredi Taksiti", "Kredi Kartı", "KMH (Ek Hesap)", "Kira", "Aidat", "Faturalar", "Ulaşım", "Sağlık", "Eğitim", "Giyim", "Yemek", "Eğlence", "Ev / Bakım", "Diğer" };
 
     [Ignore] public string AmountText => (IsIncome ? "+ " : "− ") + Fmt.Money(Amount);
     [Ignore] public Color AmountColor => IsIncome ? AppColors.Green : AppColors.Red;
@@ -192,4 +192,26 @@ public class StepDay : IEntity
     [PrimaryKey, AutoIncrement] public int Id { get; set; }
     [Indexed] public DateTime Date { get; set; }   // günün başlangıcı (00:00)
     public int Steps { get; set; }
+}
+
+// ───────────── DÜZENLİ ÖDEMELER ─────────────
+public class RecurringPayment : IEntity
+{
+    [PrimaryKey, AutoIncrement] public int Id { get; set; }
+    public string Type { get; set; }          // Kredi Taksiti, Kredi Kartı, KMH (Ek Hesap), Kira, Aidat, Fatura, Diğer
+    public string Name { get; set; }
+    public decimal Amount { get; set; }
+    public int Day { get; set; }              // ayın kaçı (1-31)
+    public int? Left { get; set; }            // kalan taksit (kredi için)
+    public bool Active { get; set; } = true;
+    public string Paid { get; set; } = "";    // ödenen aylar: "2026-10,2026-11"
+    public DateTime Since { get; set; } = DateTime.Today;
+
+    public bool IsPaid(string monthKey) => (Paid ?? "").Split(',').Contains(monthKey);
+    public void MarkPaid(string monthKey)
+    {
+        var l = (Paid ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+        if (!l.Contains(monthKey)) l.Add(monthKey);
+        Paid = string.Join(",", l.TakeLast(36));
+    }
 }

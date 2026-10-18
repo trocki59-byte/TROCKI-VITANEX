@@ -8,6 +8,7 @@ public partial class HomePage : ContentPage
     int _cols = -1;
     bool? _wide;
     List<Reminder> _reminders = new();
+    List<RecurringPayment> _duePays = new();
 
     public HomePage()
     {
@@ -229,6 +230,9 @@ public partial class HomePage : ContentPage
             _stepsText = $"Bugün {(await StepCounter.Today()).ToString("N0", Fmt.TR)} adım";
             if (_stepsSub != null) _stepsSub.Text = _stepsText;
 
+            // Yaklaşan ödemeler (yarın / bugün / gecikmiş)
+            _duePays = await Payments.Due();
+
             // Hatırlatıcılar
             var c = await Db.Get();
             _reminders = (await c.Table<Reminder>().ToListAsync())
@@ -236,7 +240,7 @@ public partial class HomePage : ContentPage
             BuildReminders();
 
             string hm = now.ToString("HH:mm");
-            int pending = _reminders.Count(r => !r.DoneToday && string.CompareOrdinal(r.Time, hm) <= 0);
+            int pending = _reminders.Count(r => !r.DoneToday && string.CompareOrdinal(r.Time, hm) <= 0) + _duePays.Count;
             Badge.IsVisible = pending > 0;
             BadgeLabel.Text = pending.ToString();
         }
@@ -250,7 +254,36 @@ public partial class HomePage : ContentPage
     {
         if (RemindersList == null) return;
         RemindersList.Children.Clear();
-        NoReminders.IsVisible = _reminders.Count == 0;
+        NoReminders.IsVisible = _reminders.Count == 0 && _duePays.Count == 0;
+
+        foreach (var p in _duePays)
+        {
+            int n = Payments.DaysLeft(p);
+            var row = new Border
+            {
+                StrokeThickness = 0, Padding = new Thickness(8, 6),
+                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 10 },
+                BackgroundColor = (n <= 0 ? AppColors.Red : AppColors.Orange).WithAlpha(0.12f),
+                Content = new Label
+                {
+                    FontSize = 14, VerticalOptions = LayoutOptions.Center,
+                    FormattedText = new FormattedString
+                    {
+                        Spans =
+                        {
+                            new Span { Text = $"{Payments.Icon(p.Type)}  " },
+                            new Span { Text = n < 0 ? "Gecikti  " : n == 0 ? "Bugün  " : "Yarın  ", TextColor = n <= 0 ? AppColors.Red : AppColors.Orange, FontAttributes = FontAttributes.Bold },
+                            new Span { Text = p.Name, FontAttributes = FontAttributes.Bold, TextColor = AppColors.Text },
+                            new Span { Text = $" · {Fmt.Money(p.Amount, 0)}", TextColor = AppColors.Text }
+                        }
+                    }
+                }
+            };
+            var ptap = new TapGestureRecognizer();
+            ptap.Tapped += async (s, e) => await Nav.Open("finance");
+            row.GestureRecognizers.Add(ptap);
+            RemindersList.Children.Add(row);
+        }
 
         foreach (var r in _reminders.Take(_wide == true ? 12 : 6))
         {
@@ -333,6 +366,12 @@ public partial class HomePage : ContentPage
         var upcoming = _reminders.Where(r => !r.DoneToday && string.CompareOrdinal(r.Time, hm) > 0).ToList();
         var text = pending.Count == 0 ? "Zamanı gelmiş bekleyen hatırlatıcı yok. 👍"
             : "Bekleyenler:\n" + string.Join("\n", pending.Select(r => $"{r.Time}  {r.Icon} {r.Title}"));
+        if (_duePays.Count > 0)
+            text = "Ödemeler:\n" + string.Join("\n", _duePays.Select(p =>
+            {
+                int n = Payments.DaysLeft(p);
+                return $"{Payments.Icon(p.Type)} {(n < 0 ? "GECİKTİ" : n == 0 ? "BUGÜN" : "Yarın")}: {p.Name} — {Fmt.Money(p.Amount, 0)}";
+            })) + "\n\n" + text;
         if (upcoming.Count > 0)
             text += "\n\nSıradakiler:\n" + string.Join("\n", upcoming.Select(r => $"{r.Time}  {r.Icon} {r.Title}"));
         await DisplayAlertAsync("Bildirimler", text, "Tamam");
@@ -341,7 +380,7 @@ public partial class HomePage : ContentPage
     async void OnFabClicked(object sender, EventArgs e)
     {
         var choice = await DisplayActionSheetAsync("Hızlı Ekle", "Vazgeç", null,
-            "❤️ Sağlık Kaydı", "💧 Su (+200 ml)", "💰 Gelir / Gider", "✅ Görev", "🍽️ Öğün", "👣 Yürüme Sayar", "⏰ Hatırlatıcı");
+            "❤️ Sağlık Kaydı", "💧 Su (+200 ml)", "💰 Gelir / Gider", "✅ Görev", "🍽️ Öğün", "📅 Düzenli Ödeme", "👣 Yürüme Sayar", "⏰ Hatırlatıcı");
         switch (choice)
         {
             case "❤️ Sağlık Kaydı": await Nav.Push(new HealthEntryPage()); break;
@@ -353,6 +392,7 @@ public partial class HomePage : ContentPage
             case "✅ Görev": await Nav.Push(new TaskEntryPage()); break;
             case "🍽️ Öğün": await Nav.Push(new MealEntryPage()); break;
             case "👣 Yürüme Sayar": await Nav.Open("steps"); break;
+            case "📅 Düzenli Ödeme": await Nav.Push(new PaymentEntryPage()); break;
             case "⏰ Hatırlatıcı": await Nav.Push(new ReminderEntryPage()); break;
         }
     }

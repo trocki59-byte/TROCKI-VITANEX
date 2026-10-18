@@ -1,5 +1,5 @@
 // TROÇKİ VİTANEX — çevrimdışı çalışma için önbellek
-const CACHE = 'trocki-vitanex-v3';
+const CACHE = 'trocki-vitanex-v8';
 const IMGCACHE = 'trocki-vitanex-img';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
@@ -13,6 +13,12 @@ self.addEventListener('activate', e => {
 });
 
 // Önce internetten dene (güncel sürüm), olmazsa önbellekten aç
+// Bildirime dokununca uygulamayı aç
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({ type: 'window' }).then(l => l.length ? l[0].focus() : clients.openWindow('./')));
+});
+
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   // Bitki fotoğrafları: önce önbellek (çevrimdışı da görünür)

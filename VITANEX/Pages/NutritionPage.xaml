@@ -28,6 +28,11 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- GÜNÜN MENÜSÜ (kilo vermeye yönelik hazır plan) -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout x:Name="MenuCard" Spacing="6" />
+                </Border>
+
                 <!-- ÖĞÜNLER -->
                 <Border Style="{StaticResource Card}">
                     <VerticalStackLayout Spacing="8">
