@@ -180,7 +180,7 @@ let uid=1;
 let S;
 function seed(){
   const T=today(),rnd=(a,b)=>a+Math.random()*(b-a);
-  S={user:'Troçki',goals:{water:2000,sleep:8,ex:30,cal:2000,steps:8000,stride:72},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[],fav:[],steps:[],pays:[],notified:{}};
+  const keepU=S?S.user:'',keepA=S?S.nameAsked:false;S={user:keepU,nameAsked:keepA,goals:{water:2000,sleep:8,ex:30,cal:2000,steps:8000,stride:72},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[],fav:[],steps:[],pays:[],notified:{}};
   for(let i=45;i>=1;i--){const d=addD(T,-i);
     S.health.push({id:uid++,date:new Date(d.getTime()+8*36e5),w:+(76.4+i*0.05+rnd(-.3,.3)).toFixed(1),sys:Math.round(rnd(118,134)),dia:Math.round(rnd(74,86)),pulse:Math.round(rnd(64,80)),spo2:Math.round(rnd(96,99)),sleep:+rnd(6,8.5).toFixed(1),ex:Math.round(rnd(10,50)),note:''});
     S.water.push({date:new Date(d.getTime()+12*36e5),ml:Math.round(rnd(1200,2300)/100)*100});}
@@ -407,7 +407,7 @@ pages.home=()=>{
     <div><div style="text-align:center;font-size:11px;font-weight:700;letter-spacing:6px;color:var(--a);margin-bottom:-4px">TROÇKİ</div><div class="logo">${LEAF}<b>VİTA<span>NEX</span></b></div><div class="tag">DAHA SAĞLIKLI • DAHA DENGELİ • DAHA ÜRETKEN BİR YAŞAM</div></div>
     <button class="bell" onclick="bell()">${ICON.bell}${pend?`<span class="badge">${pend}</span>`:''}</button></div>
   <div class="home-grid"><div>
-  <div class="hero">${HERO}${heroPhoto(h)}<div class="msg"><h2>${g} ${esc(S.user)}</h2><p>Bugün de kendin için güzel bir adım at. Daha sağlıklı, daha dengeli, daha üretken bir yaşam mümkün…</p></div>
+  <div class="hero">${HERO}${heroPhoto(h)}<div class="msg"><h2>${g}${S.user?' '+esc(S.user):' 👋'}</h2><p>Bugün de kendin için güzel bir adım at. Daha sağlıklı, daha dengeli, daha üretken bir yaşam mümkün…</p></div>
     <div class="dt"><div style="font-size:17px">${now.toLocaleDateString(TR,{day:'numeric',month:'long',year:'numeric'})}</div><div>${now.toLocaleDateString(TR,{weekday:'long'})}</div></div></div>
   <div class="sum">
     <div class="card" onclick="go('health')"><div class="e">❤️</div><div class="n">Sağlık</div><div class="v" style="color:var(--g)">% ${hs}</div><div class="mu">Hedef: %100</div><div class="bar"><i style="width:${hs}%;background:var(--g)"></i></div></div>
@@ -935,7 +935,7 @@ function render(){
   $('#navwrap').innerHTML=p==='home'?'':`<div class="nav">${stack.length>1?'<button onclick="back()">←</button>':''}<span>${esc(title)}</span></div>`;
   if(p==='plants'){const i=$('#pq');i.oninput=()=>{st.pq=i.value;$('#plist').innerHTML=plantList()}}
   if(p==='form')bindForm(c);
-  if(c.isSettings){$('#save').onclick=()=>{const v={};document.querySelectorAll('[data-k]').forEach(el=>v[el.dataset.k]=el.value);S.user=v.user.trim()||'Troçki';['water','sleep','ex','cal'].forEach(k=>S.goals[k]=P(v[k])||S.goals[k]);toast('Ayarlar kaydedildi ✓')}}
+  if(c.isSettings){$('#save').onclick=()=>{const v={};document.querySelectorAll('[data-k]').forEach(el=>v[el.dataset.k]=el.value);S.user=v.user.trim();S.nameAsked=true;['water','sleep','ex','cal'].forEach(k=>S.goals[k]=P(v[k])||S.goals[k]);toast('Ayarlar kaydedildi ✓')}}
   const op=$('#pedPill');if(op)op.remove();if(PED.on&&p!=='steps'){const el=document.createElement('div');el.id='pedPill';el.className='ped-pill';el.innerHTML='👣 <b>'+stepsOn(today()).toLocaleString(TR)+'</b> adım';el.onclick=()=>go('steps');$('#screen').appendChild(el)}
   const fab=p!=='form'&&pages[p]&&pages[p].fab;$('#fabwrap').innerHTML=fab?'<button class="fab" id="fab">+</button>':'';if(fab)$('#fab').onclick=()=>pages[p].fab();
   $('#tabs').innerHTML=TABS.map(t=>`<button class="${tab===t[0]?'on':''}" onclick="go('${t[0]}')">${ICON[t[0]]}${t[1]}</button>`).join('');
@@ -946,7 +946,7 @@ function splash(){const el=document.createElement('div');el.className='splash';
   $('#screen').appendChild(el);setTimeout(()=>{el.style.opacity=0;setTimeout(()=>el.remove(),400)},1900)}
 // ───────── kalıcı kayıt (tarayıcı) ─────────
 const KEY='trocki_vitanex_v1';
-function empty(){S={user:'Troçki',goals:{water:2000,sleep:8,ex:30,cal:2000,steps:8000,stride:72},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[],fav:[],steps:[],pays:[],notified:{}};
+function empty(){S={user:'',goals:{water:2000,sleep:8,ex:30,cal:2000,steps:8000,stride:72},health:[],water:[],meds:[],meals:[],fin:[],tasks:[],mods:[],rem:[],fav:[],steps:[],pays:[],notified:{}};
   [['08:00','💧','Su iç (200 ml)'],['09:00','🚶','Sabah yürüyüşü (30 dk)'],['12:00','🍽️','Öğle yemeği'],['15:00','📖','Kitap oku (15 dk)']].forEach(([t,i,x])=>S.rem.push({id:uid++,time:t,icon:i,title:x,active:true,done:null}))}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function revive(o){['health','water','meals','fin','tasks','mods','steps'].forEach(k=>(o[k]||[]).forEach(x=>{if(x.date)x.date=new Date(x.date)}));
@@ -973,6 +973,15 @@ let th=null;try{th=localStorage.getItem('tv_theme')}catch(e){}
 dark=th?th==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
 $('#screen').classList.toggle('dark',dark);document.body.classList.toggle('dark',dark);
 render();splash();setTimeout(payNotify,2500);
+// İlk açılışta ad sor (eski kurulumlarda da bir kez sorulur)
+setTimeout(()=>{if(S.nameAsked)return;askName()},2300);
+window.askName=()=>{const ov=$('#overlay');ov.innerHTML=`<div class="ov"><div class="sheet" style="padding:22px 18px"><h4 style="font-size:20px;color:var(--pd)">👋 Hoş geldiniz!</h4>
+  <p class="mu" style="font-size:14px;margin:6px 0 12px;line-height:1.45">Size nasıl hitap edelim? Adınız ana sayfada "Günaydın …" diye görünür. Sadece bu telefonda saklanır.</p>
+  <input id="nameIn" class="nameIn" maxlength="30" placeholder="Adınız" value="${esc(S.user&&S.user!=='Troçki'?S.user:'')}" style="width:100%;border:1px solid var(--ln);border-radius:12px;padding:12px;font-size:17px;background:var(--card);color:var(--tx)">
+  <button id="nameOk" style="margin-top:12px;background:var(--p);color:#fff;text-align:center;border-radius:14px;font-weight:700;border:0">Kaydet</button><button id="nameSkip" style="margin-top:4px;text-align:center;color:var(--mu);border:0">Şimdi değil</button></div></div>`;
+  const done=v=>{S.user=v;S.nameAsked=true;ov.innerHTML='';render()};
+  $('#nameOk').onclick=()=>done(($('#nameIn').value||'').trim());$('#nameSkip').onclick=()=>done(S.user==='Troçki'?'':S.user);
+  setTimeout(()=>$('#nameIn')?.focus(),100)};
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')payNotify()});
 // ───────── iPhone / PWA ─────────
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});

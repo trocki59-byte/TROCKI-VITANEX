@@ -45,7 +45,8 @@ public partial class SettingsPage : ContentPage
 
     async void OnSave(object sender, EventArgs e)
     {
-        AppSettings.UserName = string.IsNullOrWhiteSpace(NameField.Text) ? "Troçki" : NameField.Text.Trim();
+        AppSettings.UserName = NameField.Text?.Trim() ?? "";
+        AppSettings.NameAsked = true;
         AppSettings.Currency = CurrencyField.SelectedItem as string ?? "₺";
         AppSettings.WaterGoal = Math.Clamp(Fmt.ParseInt(WaterField.Text) ?? 2000, 250, 10000);
         AppSettings.SleepGoal = Math.Clamp(Fmt.ParseDouble(SleepField.Text) ?? 8, 3, 14);

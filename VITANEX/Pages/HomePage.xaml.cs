@@ -21,6 +21,21 @@ public partial class HomePage : ContentPage
     {
         base.OnAppearing();
         await LoadAsync();
+        await AskNameOnce();
+    }
+
+    /// <summary>İlk açılışta kullanıcıya adını sorar (bir kez).</summary>
+    async Task AskNameOnce()
+    {
+        if (AppSettings.NameAsked) return;
+        AppSettings.NameAsked = true;
+        await Task.Delay(600);
+        var name = await DisplayPromptAsync("👋 Hoş geldiniz!",
+            "Size nasıl hitap edelim? Adınız ana sayfada \"Günaydın …\" diye görünür. Sadece bu telefonda saklanır.",
+            "Kaydet", "Şimdi değil", "Adınız", 30, Keyboard.Text,
+            AppSettings.UserName == "Troçki" ? "" : AppSettings.UserName);
+        if (name != null) AppSettings.UserName = name.Trim();
+        await LoadAsync();
     }
 
     // ───────── Telefon / tablet yerleşimi ─────────
@@ -194,7 +209,8 @@ public partial class HomePage : ContentPage
         var now = DateTime.Now;
         MenuIcon.Source = Theme.IsDark ? "icon_menu_light.png" : "icon_menu.png";
         BellIcon.Source = Theme.IsDark ? "icon_bell_light.png" : "icon_bell.png";
-        GreetingLabel.Text = $"{Greeting(now.Hour)} {AppSettings.UserName}";
+        GreetingLabel.Text = string.IsNullOrWhiteSpace(AppSettings.UserName)
+            ? $"{Greeting(now.Hour)} 👋" : $"{Greeting(now.Hour)} {AppSettings.UserName}";
         DateLabel.Text = now.ToString("d MMMM yyyy", Fmt.TR);
         DayLabel.Text = now.ToString("dddd", Fmt.TR);
         _ = LoadHeroPhoto(now.Hour);

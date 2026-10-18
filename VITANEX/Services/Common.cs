@@ -26,8 +26,15 @@ public static class AppSettings
 {
     public static string UserName
     {
-        get => Preferences.Default.Get("user_name", "Troçki");
+        get => Preferences.Default.Get("user_name", "");
         set => Preferences.Default.Set("user_name", value);
+    }
+
+    /// <summary>İlk açılışta ad soruldu mu?</summary>
+    public static bool NameAsked
+    {
+        get => Preferences.Default.Get("name_asked", false);
+        set => Preferences.Default.Set("name_asked", value);
     }
 
     public static string Currency
