@@ -94,7 +94,8 @@ public partial class FinancePage : ContentPage
                 Children =
                 {
                     new Label { Text = p.Name, FontSize = 15, FontAttributes = FontAttributes.Bold, TextColor = AppColors.Text },
-                    new Label { Text = $"{p.Type} · ödeme günü: {p.Day}" + (p.Left.HasValue ? $" · kalan {p.Left} taksit" : ""), FontSize = 12, TextColor = AppColors.Muted },
+                    new Label { Text = $"{p.Type} · ödeme günü: {p.Day}" + (p.Left.HasValue ? $" · kalan {p.Left} taksit" : "")
+                        + (p.StartDate.HasValue && p.StartDate.Value.Date > DateTime.Today ? $" · ilk ödeme {p.StartDate.Value.ToString("d MMMM yyyy", Fmt.TR)}" : ""), FontSize = 12, TextColor = AppColors.Muted },
                     new Label
                     {
                         FontSize = 13,

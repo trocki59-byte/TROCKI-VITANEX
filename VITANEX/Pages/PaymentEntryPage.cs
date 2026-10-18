@@ -10,6 +10,8 @@ public class PaymentEntryPage : ContentPage
     readonly bool _isNew;
     readonly Picker _type;
     readonly Entry _name, _amount, _day, _left;
+    readonly Switch _hasStart;
+    readonly DatePicker _start;
 
     public PaymentEntryPage(RecurringPayment p = null)
     {
@@ -23,6 +25,21 @@ public class PaymentEntryPage : ContentPage
         _amount = new Entry { Placeholder = "örn. 4500", Keyboard = Keyboard.Numeric, Text = _p.Amount > 0 ? _p.Amount.ToString("0.##", Fmt.TR) : "" };
         _day = new Entry { Placeholder = "1 – 31", Keyboard = Keyboard.Numeric, Text = _p.Day.ToString() };
         _left = new Entry { Placeholder = "Kredi için kalan taksit (boş bırakılabilir)", Keyboard = Keyboard.Numeric, Text = _p.Left?.ToString() ?? "" };
+
+        _hasStart = new Switch { IsToggled = _p.StartDate.HasValue, OnColor = AppColors.Green, VerticalOptions = LayoutOptions.Center };
+        _start = new DatePicker
+        {
+            Date = _p.StartDate ?? DateTime.Today.AddMonths(1),
+            MinimumDate = DateTime.Today,
+            Format = "d MMMM yyyy",
+            IsVisible = _p.StartDate.HasValue
+        };
+        _hasStart.Toggled += (s, e) => { _start.IsVisible = e.Value; if (e.Value) _day.Text = ((DateTime)_start.Date).Day.ToString(); };
+        _start.DateSelected += (s, e) => _day.Text = ((DateTime)_start.Date).Day.ToString();
+        var startRow = new Grid { ColumnSpacing = 8, Margin = new Thickness(0, 6, 0, 0) };
+        Ui.Cols(startRow, -1, 0);
+        startRow.Add(new Label { Text = "📅 İleri tarihli başlıyor (örn. 4 Ocak 2027)", Style = Ui.Style("FieldLabel"), VerticalOptions = LayoutOptions.Center, Margin = new Thickness(0) }, 0, 0);
+        startRow.Add(_hasStart, 1, 0);
 
         var save = new Button { Text = "Kaydet" };
         save.Clicked += OnSave;
@@ -45,6 +62,7 @@ public class PaymentEntryPage : ContentPage
                                 Field("Tür"), _type,
                                 Field("Açıklama"), _name,
                                 Field("Aylık tutar (₺)"), _amount,
+                                startRow, _start,
                                 Field("Ödeme günü (ayın kaçı?)"), _day,
                                 Field("Kalan taksit sayısı"), _left,
                             }
@@ -78,6 +96,8 @@ public class PaymentEntryPage : ContentPage
         _p.Amount = amount.Value;
         _p.Day = day.Value;
         _p.Left = left;
+        _p.StartDate = _hasStart.IsToggled ? ((DateTime)_start.Date).Date : null;
+        if (_p.StartDate.HasValue) _p.Day = _p.StartDate.Value.Day;
 
         if (_isNew)
         {
@@ -87,6 +107,7 @@ public class PaymentEntryPage : ContentPage
         }
         else
         {
+            if (_p.StartDate.HasValue && _p.StartDate.Value.Date > DateTime.Today) _p.Since = _p.StartDate.Value.Date;
             await Db.Save(_p);
             await Payments.Reschedule();
         }

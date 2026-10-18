@@ -749,7 +749,8 @@ function dueIn(p,m){const last=new Date(m.getFullYear(),m.getMonth()+1,0).getDat
 // Sıradaki (ödenmemiş) ödeme günü; geçen ay ödenmediyse onu gösterir
 function payNext(p){const T=today(),M0=addM(T,0),prev=addM(M0,-1);
   const pd=dueIn(p,prev);if(p.since&&pd>=new Date(p.since)&&!p.paid.includes(mKey(pd)))return pd;
-  let d=dueIn(p,M0);if(p.paid.includes(mKey(d)))d=dueIn(p,addM(M0,1));return d}
+  let d=dueIn(p,M0);if(p.paid.includes(mKey(d)))d=dueIn(p,addM(M0,1));
+  if(p.start){const s=new Date(p.start);s.setHours(0,0,0,0);if(d<s){d=dueIn(p,s);if(d<s)d=dueIn(p,addM(s,1))}}return d}
 const payDays=p=>Math.round((payNext(p)-today())/864e5);
 function payWhen(n){return n<0?`<b style="color:var(--r)">${-n} gün gecikti!</b>`:n===0?'<b style="color:var(--r)">BUGÜN</b>':n===1?'<b style="color:var(--o)">Yarın</b>':`${n} gün kaldı`}
 const payDue=()=>S.pays.filter(p=>p.active&&payDays(p)<=1).sort((a,b)=>payDays(a)-payDays(b));
@@ -758,7 +759,7 @@ function paysCard(){const L=S.pays.filter(p=>p.active).sort((a,b)=>payDays(a)-pa
   const tot=L.reduce((a,p)=>a+p.amt,0),perm=('Notification' in window)?Notification.permission:'none';
   return`<div class="card"><div class="row"><span class="st">📅 Düzenli Ödemeler</span><span class="sp"></span><button class="btn2" onclick="addPay()">+ Ekle</button></div>
   <p class="mu" style="margin-top:4px">Aylık toplam: <b>${money(tot)}</b> · ${L.length} ödeme</p>
-  ${L.length?L.map(p=>{const n=payDays(p),d=payNext(p);return`<div class="li" onclick="payTap(${p.id})"><span class="e">${payIcon(p.type)}</span><div style="flex:1;min-width:0"><div class="t">${esc(p.name)}</div><div class="mu">${p.type} · ödeme günü: ${p.day}${p.left!=null?` · kalan ${p.left} taksit`:''}</div><div style="font-size:12.5px;margin-top:2px">${d.toLocaleDateString(TR,{day:'numeric',month:'long'})} · ${payWhen(n)}</div></div><b style="color:var(--r);white-space:nowrap">${money(p.amt,0)}</b></div>`}).join(''):'<p class="mu" style="padding:10px 0">Kredi taksiti, kredi kartı, KMH, kira, aidat gibi her ay ödediklerinizi ekleyin; bir gün önce ve ödeme günü hatırlatılır.</p>'}
+  ${L.length?L.map(p=>{const n=payDays(p),d=payNext(p);return`<div class="li" onclick="payTap(${p.id})"><span class="e">${payIcon(p.type)}</span><div style="flex:1;min-width:0"><div class="t">${esc(p.name)}</div><div class="mu">${p.type} · ödeme günü: ${p.day}${p.left!=null?` · kalan ${p.left} taksit`:''}${p.start&&new Date(p.start)>today()?` · ilk ödeme ${new Date(p.start).toLocaleDateString(TR,{day:'numeric',month:'long',year:'numeric'})}`:''}</div><div style="font-size:12.5px;margin-top:2px">${d.toLocaleDateString(TR,{day:'numeric',month:'long'})} · ${payWhen(n)}</div></div><b style="color:var(--r);white-space:nowrap">${money(p.amt,0)}</b></div>`}).join(''):'<p class="mu" style="padding:10px 0">Kredi taksiti, kredi kartı, KMH, kira, aidat gibi her ay ödediklerinizi ekleyin; bir gün önce ve ödeme günü hatırlatılır.</p>'}
   ${L.length?`<button class="btn2" style="width:100%;margin-top:10px" onclick="payCal()">📅 Tümünü iPhone Takvimine Ekle (bildirim)</button>`:''}
   ${perm==='default'?`<button class="btn2" style="width:100%;margin-top:8px" onclick="payPerm()">🔔 Uygulama bildirimlerine izin ver</button>`:''}
   </div>`}
@@ -767,13 +768,15 @@ window.addPay=(p)=>form(p?'Ödemeyi Düzenle':'Yeni Düzenli Ödeme',[
   {k:'type',l:'Tür',t:'select',o:PAYT.map(x=>x[0])},
   {k:'name',l:'Açıklama',ph:'örn. Ziraat konut kredisi, Bonus kart, Ev kirası'},
   {k:'amt',l:'Aylık tutar (₺)',t:'num',ph:'4500'},
-  {k:'day',l:'Ödeme günü (ayın kaçı? 1–31)',t:'num',ph:'15'},
+  {k:'start',l:'📅 İlk ödeme tarihi (ileri tarihliyse seçin, örn. 4 Ocak 2027)',t:'date'},
+  {k:'day',l:'Ödeme günü (ayın kaçı? 1–31) — ilk ödeme tarihi seçilirse otomatik',t:'num',ph:'15'},
   {k:'left',l:'Kalan taksit sayısı (kredi için, boş bırakılabilir)',t:'num',ph:'örn. 24'}],
-  p?{type:p.type,name:p.name,amt:num(p.amt,2),day:p.day,left:p.left??''}:{type:'Kredi Taksiti',day:15},
-  v=>{const a=P(v.amt),d=Math.round(P(v.day)||0),l=v.left===''||v.left==null?null:Math.round(P(v.left));
+  p?{type:p.type,name:p.name,amt:num(p.amt,2),day:p.day,left:p.left??'',start:p.start?dIn(new Date(p.start)):''}:{type:'Kredi Taksiti',day:15,start:''},
+  v=>{const st=v.start?fromIn(v.start,'00:00'):null;if(st)v.day=String(st.getDate());const a=P(v.amt),d=Math.round(P(v.day)||0),l=v.left===''||v.left==null?null:Math.round(P(v.left));
     if(!a||a<=0)return'Geçerli bir tutar girin.';if(d<1||d>31)return'Ödeme günü 1 ile 31 arasında olmalı.';if(l!=null&&(isNaN(l)||l<1))return'Kalan taksit 1 veya daha fazla olmalı.';
-    const o={type:v.type,name:v.name.trim()||v.type,amt:a,day:d,left:l};
-    if(p)Object.assign(p,o);else{const n={id:uid++,...o,active:true,paid:[],since:today().toISOString()};const d=dueIn(n,addM(today(),0));if(d<today())n.paid.push(mKey(d));S.pays.push(n)}});
+    const o={type:v.type,name:v.name.trim()||v.type,amt:a,day:d,left:l,start:st&&st>today()?st.toISOString():null};
+    if(p){Object.assign(p,o);if(o.start)p.since=o.start}
+    else{const n={id:uid++,...o,active:true,paid:[],since:(o.start||today().toISOString())};if(!o.start){const d=dueIn(n,addM(today(),0));if(d<today())n.paid.push(mKey(d))}S.pays.push(n)}});
 
 window.payTap=id=>{const p=S.pays.find(x=>x.id===id),d=payNext(p);
   sheet(`${payIcon(p.type)} ${p.name} — ${money(p.amt,0)}`,[

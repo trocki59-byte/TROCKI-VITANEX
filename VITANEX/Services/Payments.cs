@@ -36,7 +36,13 @@ public static class Payments
         var prev = DueIn(p, m0.AddMonths(-1));
         if (prev >= p.Since.Date && !p.IsPaid(Key(prev))) return prev;
         var d = DueIn(p, m0);
-        return p.IsPaid(Key(d)) ? DueIn(p, m0.AddMonths(1)) : d;
+        if (p.IsPaid(Key(d))) d = DueIn(p, m0.AddMonths(1));
+        if (p.StartDate.HasValue && d < p.StartDate.Value.Date)
+        {
+            d = DueIn(p, p.StartDate.Value);
+            if (d < p.StartDate.Value.Date) d = DueIn(p, p.StartDate.Value.AddMonths(1));
+        }
+        return d;
     }
 
     public static int DaysLeft(RecurringPayment p) => (int)(NextDue(p) - DateTime.Today).TotalDays;
@@ -60,9 +66,15 @@ public static class Payments
     /// <summary>Yeni ödeme: bu ayın günü geçtiyse bu ay ödenmiş sayılır.</summary>
     public static async Task Add(RecurringPayment p)
     {
-        p.Since = DateTime.Today;
-        var d = DueIn(p, DateTime.Today);
-        if (d < DateTime.Today) p.MarkPaid(Key(d));
+        if (p.StartDate.HasValue && p.StartDate.Value.Date > DateTime.Today)
+            p.Since = p.StartDate.Value.Date;              // ileri tarihli: o güne kadar ödeme yok
+        else
+        {
+            p.StartDate = null;
+            p.Since = DateTime.Today;
+            var d = DueIn(p, DateTime.Today);
+            if (d < DateTime.Today) p.MarkPaid(Key(d));
+        }
         await Db.Save(p);
         await Reschedule();
     }

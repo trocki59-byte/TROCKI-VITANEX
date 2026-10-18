@@ -206,6 +206,7 @@ public class RecurringPayment : IEntity
     public bool Active { get; set; } = true;
     public string Paid { get; set; } = "";    // ödenen aylar: "2026-10,2026-11"
     public DateTime Since { get; set; } = DateTime.Today;
+    public DateTime? StartDate { get; set; }   // ileri tarihli ilk ödeme (örn. 4 Ocak 2027)
 
     public bool IsPaid(string monthKey) => (Paid ?? "").Split(',').Contains(monthKey);
     public void MarkPaid(string monthKey)
