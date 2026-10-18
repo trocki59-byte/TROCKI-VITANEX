@@ -197,6 +197,7 @@ public partial class HomePage : ContentPage
         GreetingLabel.Text = $"{Greeting(now.Hour)} {AppSettings.UserName}";
         DateLabel.Text = now.ToString("d MMMM yyyy", Fmt.TR);
         DayLabel.Text = now.ToString("dddd", Fmt.TR);
+        _ = LoadHeroPhoto(now.Hour);
 
         try
         {
@@ -248,6 +249,21 @@ public partial class HomePage : ContentPage
         {
             await DisplayAlertAsync("Hata", ex.Message, "Tamam");
         }
+    }
+
+    // ───────── Manzara: günün saatine göre gerçek fotoğraf ─────────
+    int _heroHour = -1;
+
+    async Task LoadHeroPhoto(int hour)
+    {
+        var h = HeroImages.For(hour);
+        if (h.Index == _heroHour) return;
+        HeroLoc.Text = "📍 " + h.Location;
+        var path = await HeroImages.Get(h);
+        if (path == null) return;
+        _heroHour = h.Index;
+        HeroPhoto.Source = ImageSource.FromFile(path);
+        await HeroPhoto.FadeTo(1, 500);
     }
 
     void BuildReminders()
