@@ -9,6 +9,7 @@ public partial class HomePage : ContentPage
     bool? _wide;
     List<Reminder> _reminders = new();
     List<RecurringPayment> _duePays = new();
+    List<DoctorAppointment> _dueAppts = new();
 
     public HomePage()
     {
@@ -249,6 +250,7 @@ public partial class HomePage : ContentPage
 
             // Yaklaşan ödemeler (yarın / bugün / gecikmiş)
             _duePays = await Payments.Due();
+            _dueAppts = await Appointments.Due();
 
             // Hatırlatıcılar
             var c = await Db.Get();
@@ -257,7 +259,7 @@ public partial class HomePage : ContentPage
             BuildReminders();
 
             string hm = now.ToString("HH:mm");
-            int pending = _reminders.Count(r => !r.DoneToday && string.CompareOrdinal(r.Time, hm) <= 0) + _duePays.Count;
+            int pending = _reminders.Count(r => !r.DoneToday && string.CompareOrdinal(r.Time, hm) <= 0) + _duePays.Count + _dueAppts.Count;
             Badge.IsVisible = pending > 0;
             BadgeLabel.Text = pending.ToString();
         }
@@ -286,7 +288,35 @@ public partial class HomePage : ContentPage
     {
         if (RemindersList == null) return;
         RemindersList.Children.Clear();
-        NoReminders.IsVisible = _reminders.Count == 0 && _duePays.Count == 0;
+        NoReminders.IsVisible = _reminders.Count == 0 && _duePays.Count == 0 && _dueAppts.Count == 0;
+
+        foreach (var a in _dueAppts)
+        {
+            bool today = a.Date.Date == DateTime.Today;
+            var arow = new Border
+            {
+                StrokeThickness = 0, Padding = new Thickness(8, 6),
+                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 10 },
+                BackgroundColor = AppColors.Primary.WithAlpha(0.10f),
+                Content = new Label
+                {
+                    FontSize = 14, VerticalOptions = LayoutOptions.Center,
+                    FormattedText = new FormattedString
+                    {
+                        Spans =
+                        {
+                            new Span { Text = "🩺  " },
+                            new Span { Text = (today ? "Bugün " : "Yarın ") + a.Date.ToString("HH:mm") + "  ", TextColor = AppColors.Primary, FontAttributes = FontAttributes.Bold },
+                            new Span { Text = Appointments.Title(a), FontAttributes = FontAttributes.Bold, TextColor = AppColors.Text }
+                        }
+                    }
+                }
+            };
+            var atap = new TapGestureRecognizer();
+            atap.Tapped += async (s, e) => await Nav.Open("health");
+            arow.GestureRecognizers.Add(atap);
+            RemindersList.Children.Add(arow);
+        }
 
         foreach (var p in _duePays)
         {
@@ -404,6 +434,9 @@ public partial class HomePage : ContentPage
                 int n = Payments.DaysLeft(p);
                 return $"{Payments.Icon(p.Type)} {(n < 0 ? "GECİKTİ" : n == 0 ? "BUGÜN" : "Yarın")}: {p.Name} — {Fmt.Money(p.Amount, 0)}";
             })) + "\n\n" + text;
+        if (_dueAppts.Count > 0)
+            text = "Doktor randevuları:\n" + string.Join("\n", _dueAppts.Select(a =>
+                $"🩺 {(a.Date.Date == DateTime.Today ? "BUGÜN" : "Yarın")} {a.Date:HH:mm}: {Appointments.Title(a)}")) + "\n\n" + text;
         if (upcoming.Count > 0)
             text += "\n\nSıradakiler:\n" + string.Join("\n", upcoming.Select(r => $"{r.Time}  {r.Icon} {r.Title}"));
         await DisplayAlertAsync("Bildirimler", text, "Tamam");
@@ -412,10 +445,11 @@ public partial class HomePage : ContentPage
     async void OnFabClicked(object sender, EventArgs e)
     {
         var choice = await DisplayActionSheetAsync("Hızlı Ekle", "Vazgeç", null,
-            "❤️ Sağlık Kaydı", "💧 Su (+200 ml)", "💰 Gelir / Gider", "✅ Görev", "🍽️ Öğün", "📅 Düzenli Ödeme", "👣 Yürüme Sayar", "⏰ Hatırlatıcı");
+            "❤️ Sağlık Kaydı", "🩺 Doktor Randevusu", "💧 Su (+200 ml)", "💰 Gelir / Gider", "✅ Görev", "🍽️ Öğün", "📅 Düzenli Ödeme", "👣 Yürüme Sayar", "⏰ Hatırlatıcı");
         switch (choice)
         {
             case "❤️ Sağlık Kaydı": await Nav.Push(new HealthEntryPage()); break;
+            case "🩺 Doktor Randevusu": await Nav.Push(new AppointmentEntryPage()); break;
             case "💧 Su (+200 ml)":
                 await Db.Save(new WaterLog { Date = DateTime.Now, Ml = 200 });
                 await LoadAsync();

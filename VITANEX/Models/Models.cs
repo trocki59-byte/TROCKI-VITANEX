@@ -216,3 +216,15 @@ public class RecurringPayment : IEntity
         Paid = string.Join(",", l.TakeLast(36));
     }
 }
+
+// ───────────── DOKTOR RANDEVULARI ─────────────
+public class DoctorAppointment : IEntity
+{
+    [PrimaryKey, AutoIncrement] public int Id { get; set; }
+    [Indexed] public DateTime Date { get; set; }   // randevu tarihi + saati
+    public string Doctor { get; set; }
+    public string Dept { get; set; }
+    public string Place { get; set; }
+    public string Note { get; set; }
+    public bool Done { get; set; }
+}

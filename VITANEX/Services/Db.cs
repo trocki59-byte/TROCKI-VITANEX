@@ -25,7 +25,7 @@ public static class Db
 
                 await c.CreateTablesAsync(CreateFlags.None,
                     typeof(HealthRecord), typeof(WaterLog), typeof(Medication), typeof(Meal),
-                    typeof(FinanceRecord), typeof(TaskItem), typeof(ModuleEntry), typeof(Reminder), typeof(StepDay), typeof(RecurringPayment));
+                    typeof(FinanceRecord), typeof(TaskItem), typeof(ModuleEntry), typeof(Reminder), typeof(StepDay), typeof(RecurringPayment), typeof(DoctorAppointment));
 
                 if (await c.Table<Reminder>().CountAsync() == 0)
                     await c.InsertAllAsync(DefaultReminders());

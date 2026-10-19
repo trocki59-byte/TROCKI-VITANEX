@@ -37,6 +37,23 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- SpO₂ -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="🫁 SpO₂ (Kandaki Oksijen)" Style="{StaticResource SectionTitle}" VerticalOptions="Center" />
+                            <Button Grid.Column="1" Text="+ SpO₂ Gir" Style="{StaticResource SecondaryButton}" Clicked="OnAddSpo2" />
+                        </Grid>
+                        <HorizontalStackLayout Spacing="10">
+                            <Label x:Name="SpoValue" FontSize="32" FontAttributes="Bold" VerticalOptions="End" />
+                            <Label x:Name="SpoState" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <Label x:Name="SpoInfo" Style="{StaticResource Muted}" />
+                        <GraphicsView x:Name="SpoChart" HeightRequest="160" />
+                        <Label Text="Normal: %95–100 · %90–94 düşük · %90 altı acil değerlendirme gerektirebilir." Style="{StaticResource Muted}" FontSize="12" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- KİLO GRAFİĞİ -->
                 <Border Style="{StaticResource Card}">
                     <VerticalStackLayout Spacing="8">
@@ -50,6 +67,18 @@
                     <VerticalStackLayout Spacing="8">
                         <Label Text="Büyük Tansiyon (son 30 kayıt)" Style="{StaticResource SectionTitle}" />
                         <GraphicsView x:Name="BpChart" HeightRequest="190" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- DOKTOR RANDEVULARI -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="🩺 Doktor Randevularım" Style="{StaticResource SectionTitle}" VerticalOptions="Center" />
+                            <Button Grid.Column="1" Text="+ Randevu" Style="{StaticResource SecondaryButton}" Clicked="OnAddAppointment" />
+                        </Grid>
+                        <VerticalStackLayout x:Name="ApptList" Spacing="2" />
+                        <Label Text="🔔 Randevudan 1 gün önce ve 2 saat önce bildirim gelir." Style="{StaticResource Muted}" FontSize="12" />
                     </VerticalStackLayout>
                 </Border>
 

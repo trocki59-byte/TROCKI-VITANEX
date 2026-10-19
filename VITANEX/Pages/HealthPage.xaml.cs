@@ -8,6 +8,7 @@ public partial class HealthPage : ContentPage
 {
     readonly LineChartDrawable _weight = new() { LineColor = AppColors.Primary, EmptyText = "Kilo kaydı yok" };
     readonly LineChartDrawable _bp = new() { LineColor = AppColors.Red, EmptyText = "Tansiyon kaydı yok" };
+    readonly LineChartDrawable _spo = new() { LineColor = Color.FromArgb("#12B5A6"), EmptyText = "SpO₂ ölçümü yok" };
 
     readonly TwoColumn _layout;
 
@@ -17,6 +18,7 @@ public partial class HealthPage : ContentPage
         _layout = new TwoColumn(Host, ColA, ColB);
         WeightChart.Drawable = _weight;
         BpChart.Drawable = _bp;
+        SpoChart.Drawable = _spo;
         SizeChanged += (s, e) => _layout.Apply(Width);
     }
 
@@ -53,6 +55,9 @@ public partial class HealthPage : ContentPage
         _bp.Values = bp.Select(r => (double?)r.Systolic.Value).ToList();
         WeightChart.Invalidate();
         BpChart.Invalidate();
+
+        BuildSpo2(all);
+        await BuildAppointments();
 
         var meds = await c.Table<Medication>().ToListAsync();
         BindableLayout.SetItemsSource(MedList, meds);
@@ -102,6 +107,119 @@ public partial class HealthPage : ContentPage
                 }
             };
             VitalsGrid.Add(box, i % 3, i / 3);
+        }
+    }
+
+    // ───────── SpO₂ (ayrı ölçüm) ─────────
+    static (string Text, Color Color) SpoLevel(int v) =>
+        v >= 95 ? ("Normal", AppColors.Green) : v >= 90 ? ("Düşük — takip edin", AppColors.Orange) : ("Çok düşük — doktora danışın", AppColors.Red);
+
+    void BuildSpo2(List<HealthRecord> all)
+    {
+        var s = all.Where(r => r.SpO2.HasValue).Take(30).Reverse().ToList();
+        var last = s.LastOrDefault();
+        if (last == null)
+        {
+            SpoValue.Text = "—";
+            SpoState.Text = "";
+            SpoInfo.Text = "Henüz SpO₂ ölçümü yok. Parmak oksimetresiyle ölçüp girin.";
+        }
+        else
+        {
+            var (t, col) = SpoLevel(last.SpO2.Value);
+            SpoValue.Text = $"%{last.SpO2}";
+            SpoValue.TextColor = col;
+            SpoState.Text = t;
+            SpoState.TextColor = col;
+            SpoInfo.Text = $"Son ölçüm: {last.DateText}" + (last.Pulse.HasValue ? $" · Nabız {last.Pulse}" : "");
+        }
+        _spo.Labels = s.Select(r => r.Date.ToString("dd.MM")).ToList();
+        _spo.Values = s.Select(r => (double?)r.SpO2.Value).ToList();
+        SpoChart.IsVisible = s.Count > 1;
+        SpoChart.Invalidate();
+    }
+
+    async void OnAddSpo2(object sender, EventArgs e)
+    {
+        var v = await DisplayPromptAsync("🫁 SpO₂ Ölçümü", "Oksimetrede görünen SpO₂ değeri (%):", "İleri", "Vazgeç",
+            placeholder: "98", maxLength: 3, keyboard: Keyboard.Numeric);
+        if (string.IsNullOrWhiteSpace(v)) return;
+        var spo = Fmt.ParseInt(v);
+        if (spo == null || spo < 50 || spo > 100)
+        {
+            await DisplayAlertAsync("Hatalı değer", "SpO₂ 50 ile 100 arasında olmalı.", "Tamam");
+            return;
+        }
+        var p = await DisplayPromptAsync("💓 Nabız", "Oksimetrede nabız da görünüyorsa yazın (boş bırakabilirsiniz):", "Kaydet", "Vazgeç",
+            placeholder: "72", maxLength: 3, keyboard: Keyboard.Numeric);
+        if (p == null) return;
+        var pulse = Fmt.ParseInt(p);
+        await Db.Save(new HealthRecord { Date = DateTime.Now, SpO2 = spo, Pulse = pulse is > 20 and < 250 ? pulse : null });
+        if (spo < 90)
+            await DisplayAlertAsync("⚠️ Dikkat", "SpO₂ %90'ın altında. Nefes darlığı, göğüs ağrısı veya morarma varsa hemen doktora başvurun (112).", "Tamam");
+        await LoadAsync();
+    }
+
+    // ───────── Doktor randevuları ─────────
+    async Task BuildAppointments()
+    {
+        var all = await Appointments.All();
+        var up = all.Where(a => !a.Done && a.Date >= DateTime.Today.AddDays(-1)).OrderBy(a => a.Date).ToList();
+        var past = all.Except(up).OrderByDescending(a => a.Date).Take(3).ToList();
+
+        ApptList.Children.Clear();
+        if (up.Count == 0)
+            ApptList.Children.Add(new Label { Text = "Yaklaşan randevu yok.", Style = Ui.Style("Muted") });
+        foreach (var a in up) ApptList.Children.Add(ApptRow(a));
+        if (past.Count > 0)
+        {
+            ApptList.Children.Add(new Label { Text = "Geçmiş", Style = Ui.Style("Muted"), FontAttributes = FontAttributes.Bold, Margin = new Thickness(0, 8, 0, 0) });
+            foreach (var a in past) ApptList.Children.Add(ApptRow(a));
+        }
+    }
+
+    View ApptRow(DoctorAppointment a)
+    {
+        var g = new Grid { ColumnSpacing = 8, Padding = new Thickness(0, 6) };
+        Ui.Cols(g, -1, 0);
+        var info = new VerticalStackLayout { Spacing = 1 };
+        info.Children.Add(new Label { Text = "🩺 " + Appointments.Title(a), FontAttributes = FontAttributes.Bold, FontSize = 15, TextColor = AppColors.Text });
+        info.Children.Add(new Label
+        {
+            Text = a.Date.ToString("d MMMM yyyy dddd · HH:mm", Fmt.TR) + (string.IsNullOrWhiteSpace(a.Place) ? "" : " · 📍 " + a.Place),
+            Style = Ui.Style("Muted")
+        });
+        if (!string.IsNullOrWhiteSpace(a.Note))
+            info.Children.Add(new Label { Text = "📝 " + a.Note, Style = Ui.Style("Muted") });
+        g.Add(info, 0, 0);
+        g.Add(new Label { Text = Appointments.WhenText(a), TextColor = Appointments.WhenColor(a), FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.Center }, 1, 0);
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += async (s, e) => await OnAppointmentTapped(a);
+        g.GestureRecognizers.Add(tap);
+        return g;
+    }
+
+    async void OnAddAppointment(object sender, EventArgs e) => await Nav.Push(new AppointmentEntryPage());
+
+    async Task OnAppointmentTapped(DoctorAppointment a)
+    {
+        var choice = await DisplayActionSheetAsync("🩺 " + Appointments.Title(a), "Vazgeç", "Sil", "Düzenle", a.Done ? "Gidilmedi olarak işaretle" : "✓ Gidildi");
+        switch (choice)
+        {
+            case "Düzenle": await Nav.Push(new AppointmentEntryPage(a)); break;
+            case "✓ Gidildi":
+            case "Gidilmedi olarak işaretle":
+                a.Done = !a.Done;
+                await Appointments.Save(a);
+                await LoadAsync();
+                break;
+            case "Sil":
+                if (await Ui.Confirm("Sil", "Bu randevu silinsin mi?"))
+                {
+                    await Appointments.Delete(a);
+                    await LoadAsync();
+                }
+                break;
         }
     }
 
