@@ -12,8 +12,8 @@ public class ActivityPermission : Permissions.BasePlatformPermission
 }
 
 /// <summary>
-/// Yürüme sayar. Telefonun donanım adım sayacını (TYPE_STEP_COUNTER) kullanır:
-/// sensör uygulama kapalıyken de saymaya devam eder, uygulama açılınca aradaki adımlar eklenir.
+/// Yürüme sayar. Telefonun donanım adım sayacını (TYPE_STEP_COUNTER) kullanır.
+/// Android'de arka plan hizmeti (StepService) sayesinde ekran kilitliyken ve uygulama kapalıyken de canlı sayar.
 /// </summary>
 public static class StepCounter
 {
@@ -104,6 +104,7 @@ public static class StepCounter
             if (st != PermissionStatus.Granted) return false;
         }
         Enabled = true;
+        await Payments.RequestPermission();   // adım bildirimi için (Android 13+)
         Start();
         return true;
     }
@@ -120,7 +121,10 @@ public static class StepCounter
     public static void Start()
     {
 #if ANDROID
-        if (Running) return;
+        if (Running && VITANEX.Droid.StepService.IsRunning) return;
+        // Arka plan hizmeti: ekran kilitliyken de sayar (bildirimde "👣 Bugün … adım")
+        if (VITANEX.Droid.StepService.Begin()) { Running = true; return; }
+        // Hizmet başlatılamazsa: yalnızca uygulama açıkken dinle
         var sensor = Manager?.GetDefaultSensor(Android.Hardware.SensorType.StepCounter);
         if (sensor == null) return;
         _listener ??= new StepSensorListener();
@@ -128,25 +132,29 @@ public static class StepCounter
 #endif
     }
 
+    /// <summary>Uygulama arka plana geçince çağrılır. Arka plan hizmeti çalışıyorsa saymaya devam eder.</summary>
     public static void Stop()
     {
 #if ANDROID
-        if (!Running) return;
-        Manager?.UnregisterListener(_listener);
-        Running = false;
+        if (_listener != null) { try { Manager?.UnregisterListener(_listener); } catch { } }
+        Running = VITANEX.Droid.StepService.IsRunning;
 #endif
     }
 
     public static void Disable()
     {
+#if ANDROID
+        VITANEX.Droid.StepService.End();
+#endif
         Stop();
+        Running = false;
         Enabled = false;
         Preferences.Default.Remove("step_last_total");
         Changed?.Invoke();
     }
 
     /// <summary>Sensörün açılıştan beri toplam değerini işler, farkı bugüne ekler.</summary>
-    static async Task Report(long total)
+    public static async Task Report(long total)
     {
         await Gate.WaitAsync();
         try

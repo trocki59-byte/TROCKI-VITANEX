@@ -1,10 +1,7 @@
 {
- "v": "1.6",
+ "v": "1.7",
  "notes": [
-  "🩺 Doktor randevuları ve hatırlatma",
-  "🫁 SpO₂ ayrı ölçüm ve grafik",
-  "🥗 Kişiye özel menü (kilo ver / koru / al, vejetaryen)",
-  "📅 Düzenli ödemelerde ileri tarihli ilk ödeme",
-  "🌙 Koyu temada öğün yazıları düzeltildi"
+  "👣 Yürüme sayar: ekran kilitliyken atılan adımlar iPhone Sağlık'tan alınır",
+  "🔔 Yeni sürüm çıkınca uygulama haber verir"
  ]
 }

@@ -164,7 +164,7 @@ svg.ch{width:100%;height:auto;max-height:240px;display:block}
 <script>
 // ───────── yardımcılar ─────────
 const TR='tr-TR';
-const APP_VER='1.6';   // ← her güncellemede artır ve version.json'u aynı yap
+const APP_VER='1.7';   // ← her güncellemede artır ve version.json'u aynı yap
 const $=s=>document.querySelector(s);
 const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
 const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
@@ -745,7 +745,7 @@ pages.steps=()=>{const T=today(),n=stepsOn(T),g=S.goals.steps||8000;
     <div id="stepRing">${stepRing(n,g,true)}</div>
     <div class="g2" style="margin-top:12px"><div class="card" style="margin:0;padding:10px;background:var(--pl)"><div class="mu">Mesafe</div><b id="stepKm" style="font-size:17px">${num(stepKm(n),2)} km</b></div><div class="card" style="margin:0;padding:10px;background:var(--pl)"><div class="mu">Yakılan</div><b id="stepKcal" style="font-size:17px">${stepKcal(n)} kcal</b></div></div>
     <button class="btn" style="margin-top:12px;${PED.on?'background:var(--r)':''}" onclick="pedToggle()">${PED.on?'⏹ Saymayı Durdur':'▶ Yürüyüşe Başla'}</button>
-    ${PED.on?'<button class="btn" style="margin-top:8px;background:#0E1B3D" onclick="pocketOn()">🔒 Cep Modu — telefonu cebe koy</button><p class="mu" style="margin-top:8px;line-height:1.45">👣 Sayılıyor… Cep Modu ekranı karartır ve cepteki yanlış dokunuşları engeller. Ekranı kilitlemeyin; kilitlenirse iPhone sayımı durdurur.</p>':'<p class="mu" style="margin-top:8px;line-height:1.45">Başlatın, sonra <b>🔒 Cep Modu</b>na dokunup telefonu cebinize koyun.</p>'}
+    ${PED.on?'<button class="btn" style="margin-top:8px;background:#0E1B3D" onclick="pocketOn()">🔒 Cep Modu — telefonu cebe koy</button><p class="mu" style="margin-top:8px;line-height:1.45">👣 Sayılıyor… Cep Modu ekranı karartır ve cepteki yanlış dokunuşları engeller. Ekran kilitlenince bu canlı sayım durur — ama iPhone’un kendisi kilitliyken de sayar: akşam <b>❤️ iPhone Sağlık’tan Al</b> ile tüm günün adımını alın.</p>':'<p class="mu" style="margin-top:8px;line-height:1.45">🔒 <b>Ekran kilitliyken de sayılsın:</b> iPhone adımlarınızı kilitliyken ve VİTANEX kapalıyken de kendisi sayar. Gün içinde ne zaman isterseniz <b>❤️ iPhone Sağlık’tan Al</b>’a dokunun, bugünün tüm adımları gelir.</p>'}
     <button class="btn" style="margin-top:8px;background:linear-gradient(135deg,#F0384B,#FF6B81)" onclick="healthImport()">❤️ iPhone Sağlık'tan Al</button>
     ${st.waitPaste?'<button class="btn" style="margin-top:8px;background:var(--g)" onclick="healthPaste()">📋 Adımları Yapıştır</button>':''}
     <button class="btn2" style="width:100%;margin-top:8px" onclick="addSteps()">✏️ Adım Sayısını Elle Gir</button>

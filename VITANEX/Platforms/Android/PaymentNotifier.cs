@@ -161,6 +161,9 @@ public class PaymentBootReceiver : BroadcastReceiver
 {
     public override void OnReceive(Context context, Intent intent)
     {
-        if (intent?.Action == Intent.ActionBootCompleted) PaymentNotifier.Restore(context);
+        if (intent?.Action != Intent.ActionBootCompleted) return;
+        PaymentNotifier.Restore(context);
+        // Yürüme sayar açıksa telefon açılınca saymaya devam et
+        try { if (Microsoft.Maui.Storage.Preferences.Default.Get("steps_enabled", false)) StepService.Begin(context); } catch { }
     }
 }

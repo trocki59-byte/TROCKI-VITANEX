@@ -11,8 +11,7 @@ public partial class App : Application
     protected override Window CreateWindow(IActivationState activationState) =>
         new Window(new Pages.SplashPage()) { Title = "TROÇKİ VİTANEX" };
 
-    // Yürüme sayar: uygulama öndeyken sensörü dinle, arka plana geçince bırak
-    // (donanım sayacı yine sayar; açılınca aradaki adımlar eklenir).
+    // Yürüme sayar: Android'de arka plan hizmeti ekran kilitliyken de sayar.
     protected override async void OnStart()
     {
         base.OnStart();

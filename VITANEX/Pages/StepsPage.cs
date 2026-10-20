@@ -172,7 +172,7 @@ public class StepsPage : ContentPage
                 _sensorBtn.IsVisible = true;
                 _sensorBtn.Text = "⏹ Otomatik Sayımı Kapat";
                 _sensorBtn.BackgroundColor = AppColors.Red;
-                _status.Text = "👣 Otomatik sayım açık. Telefonunuzu yanınızda taşımanız yeterli.";
+                _status.Text = "👣 Otomatik sayım açık. Ekran kilitliyken, telefon cebinizdeyken ve uygulama kapalıyken de sayar; bildirim alanında \"Bugün … adım\" görünür.";
             }
             else
             {
